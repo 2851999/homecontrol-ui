@@ -1,7 +1,10 @@
 "use client";
+import { useAppDispatch } from "@/state/hooks";
+import { toggleTheme } from "@/state/settingsSlice";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
+  Button,
   FormControl,
   Grid,
   IconButton,
@@ -15,6 +18,11 @@ import React from "react";
 
 export default function Home() {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
+  const dispatch = useAppDispatch();
+
+  const handleToggleTheme = () => {
+    dispatch(toggleTheme());
+  };
 
   return (
     <Grid
@@ -58,6 +66,9 @@ export default function Home() {
                   }
                 ></OutlinedInput>
               </FormControl>
+            </Grid>
+            <Grid item>
+              <Button onClick={handleToggleTheme}>Toggle</Button>
             </Grid>
           </Grid>
         </Paper>
