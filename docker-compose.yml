@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  api:
+    build: .
+    working_dir: /homecontrol-ui
+    command: "yarn dev"
+    volumes:
+      - ./:/homecontrol-ui
+    ports:
+      - "3000:3000"
