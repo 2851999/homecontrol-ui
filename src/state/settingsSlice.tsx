@@ -7,7 +7,7 @@ export interface SettingsState {
 }
 
 const initialState: SettingsState = {
-  themeMode: (localStorage.getItem("themeMode") as ThemeMode) || "light",
+  themeMode: "light",
 };
 
 export const settingsSlice = createSlice({

@@ -1,10 +1,11 @@
 "use client";
 import { Provider } from "react-redux";
-import { store } from "../state/store";
+import { useStore } from "../state/store";
 import CustomThemeProvider from "../theme/CustomThemeProvider";
 
 export default function RootLayout(props: { children: any }) {
   const { children } = props;
+  const store = useStore();
   return (
     <html lang="en">
       <body>
