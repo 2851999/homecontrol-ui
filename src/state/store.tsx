@@ -24,6 +24,10 @@ const makeStore = (preloadedState?: PreloadedState<RootState>) =>
     preloadedState: preloadedState,
   });
 
+// More types
+type Store = ReturnType<typeof makeStore>;
+export type AppDispatch = Store["dispatch"];
+
 /**
  * Loads the "settings" part of a Redux store's state from the local storage
  *
@@ -51,11 +55,11 @@ export const saveToLocalStorage = (state: RootState) => {
 /**
  * Custom hook for loading the store from local storage when it is possible to do so
  *
- * @returns Redux store
+ * @returns Redux store or undefined if not loaded yet
  */
 export const useStore = () => {
   // By default initialise without a preloaded state
-  const [store, setStore] = useState(makeStore());
+  const [store, setStore] = useState<Store | undefined>(undefined);
 
   useEffect(() => {
     // In here can guarantee on client
@@ -67,7 +71,3 @@ export const useStore = () => {
 
   return store;
 };
-
-// More types
-type Store = ReturnType<typeof makeStore>;
-export type AppDispatch = Store["dispatch"];

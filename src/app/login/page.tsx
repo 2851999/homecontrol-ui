@@ -1,6 +1,4 @@
 "use client";
-import { useAppDispatch } from "@/state/hooks";
-import { toggleTheme } from "@/state/settingsSlice";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
