@@ -5,7 +5,9 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Button,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   IconButton,
   InputAdornment,
@@ -16,13 +18,8 @@ import {
 } from "@mui/material";
 import React from "react";
 
-export default function Home() {
+export default function LoginPage() {
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
-  const dispatch = useAppDispatch();
-
-  const handleToggleTheme = () => {
-    dispatch(toggleTheme());
-  };
 
   return (
     <Grid
@@ -34,7 +31,7 @@ export default function Home() {
     >
       <Grid item>
         <Paper sx={{ padding: 4 }}>
-          <Grid container direction="column" alignItems="center" spacing={4}>
+          <Grid container direction="column" alignItems="center" spacing={2}>
             <Grid item textAlign="center">
               <Typography variant="h3">Login</Typography>
             </Grid>
@@ -67,8 +64,14 @@ export default function Home() {
                 ></OutlinedInput>
               </FormControl>
             </Grid>
+            <Grid item alignItems="left" sx={{ width: "100%" }}>
+              <FormControlLabel
+                control={<Checkbox defaultChecked />}
+                label="Remember me?"
+              />
+            </Grid>
             <Grid item>
-              <Button onClick={handleToggleTheme}>Toggle</Button>
+              <Button variant="contained">Login</Button>
             </Grid>
           </Grid>
         </Paper>

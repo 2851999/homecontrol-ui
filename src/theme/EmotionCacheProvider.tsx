@@ -1,6 +1,8 @@
 "use client";
 
-// SEE https://github.com/mui/material-ui/issues/37935
+/**
+ * SEE https://github.com/mui/material-ui/issues/37935
+ */
 
 import * as React from "react";
 import createCache from "@emotion/cache";
@@ -10,12 +12,10 @@ import type {
   EmotionCache,
   Options as OptionsOfCreateCache,
 } from "@emotion/cache";
-import { CssBaseline, ThemeProvider } from "@mui/material";
 
-export type ThemeRegistryProps = {
+export type EmotionCacheProviderProps = {
   /** This is the options passed to createCache() from 'import createCache from "@emotion/cache"' */
   options: Omit<OptionsOfCreateCache, "insertionPoint">;
-  theme: any;
   /** By default <CacheProvider /> from 'import { CacheProvider } from "@emotion/react"' */
   CacheProvider?: (props: {
     value: EmotionCache;
@@ -24,14 +24,9 @@ export type ThemeRegistryProps = {
   children: React.ReactNode;
 };
 
-// Adatped from https://github.com/garronej/tss-react/blob/main/src/next/appDir.tsx
-export default function ThemeRegistry(props: ThemeRegistryProps) {
-  const {
-    options,
-    theme,
-    CacheProvider = DefaultCacheProvider,
-    children,
-  } = props;
+// Adapted from https://github.com/garronej/tss-react/blob/main/src/next/appDir.tsx
+export default function EmotionCacheProvider(props: EmotionCacheProviderProps) {
+  const { options, CacheProvider = DefaultCacheProvider, children } = props;
 
   const [registry] = React.useState(() => {
     const cache = createCache(options);
@@ -96,19 +91,14 @@ export default function ThemeRegistry(props: ThemeRegistryProps) {
           <style
             data-emotion={dataEmotionAttribute}
             // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: styles }}
+            dangerouslySetInnerHTML={{
+              __html: options.prepend ? `@layer emotion {${styles}}` : styles,
+            }}
           />
         )}
       </React.Fragment>
     );
   });
 
-  return (
-    <CacheProvider value={registry.cache}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        {children}
-      </ThemeProvider>
-    </CacheProvider>
-  );
+  return <CacheProvider value={registry.cache}>{children}</CacheProvider>;
 }
