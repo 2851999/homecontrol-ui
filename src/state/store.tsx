@@ -55,11 +55,20 @@ export const saveToLocalStorage = (state: RootState) => {
 /**
  * Custom hook for loading the store from local storage when it is possible to do so
  *
+ * @param useDefaultStore - When true, the returned store is never undefined
+ *                          and instead uses a separate store while waiting for
+ *                          the client to load the data from the local session
+ *
  * @returns Redux store or undefined if not loaded yet
  */
-export const useStore = () => {
+export function useStore<B extends boolean>(
+  useDefaultStore: B
+): B extends true ? Store : Store | undefined;
+export function useStore(useDefaultStore: boolean): Store | undefined {
   // By default initialise without a preloaded state
-  const [store, setStore] = useState<Store | undefined>(undefined);
+  const [store, setStore] = useState<Store | undefined>(
+    useDefaultStore ? makeStore() : undefined
+  );
 
   useEffect(() => {
     // In here can guarantee on client
@@ -70,4 +79,4 @@ export const useStore = () => {
   }, []);
 
   return store;
-};
+}

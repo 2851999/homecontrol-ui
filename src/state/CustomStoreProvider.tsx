@@ -5,9 +5,12 @@ import { useStore } from "./store";
 
 /* Provides a redux store - Displays a progress bar while loading data from
   local storage before allowing anything to be rendered */
-export const CustomStoreProvider = (props: { children: any }) => {
-  const { children } = props;
-  const store = useStore();
+export const CustomStoreProvider = (props: {
+  waitToLoad: boolean;
+  children: any;
+}) => {
+  const { waitToLoad, children } = props;
+  const store = useStore(!waitToLoad);
 
   return store === undefined ? (
     <Grid

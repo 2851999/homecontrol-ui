@@ -6,7 +6,7 @@ export default function RootLayout(props: { children: any }) {
   return (
     <html lang="en">
       <body>
-        <CustomStoreProvider>
+        <CustomStoreProvider waitToLoad={true}>
           <CustomThemeProvider>{children}</CustomThemeProvider>
         </CustomStoreProvider>
       </body>
