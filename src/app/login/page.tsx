@@ -2,6 +2,7 @@
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
+  Alert,
   Button,
   Checkbox,
   FormControl,
@@ -15,9 +16,32 @@ import {
   Typography,
 } from "@mui/material";
 import React from "react";
+import { handleLogin } from "../../authentication";
 
 export default function LoginPage() {
+  // Form parameters
+  const [username, setUsername] = React.useState<string>("");
+  const [password, setPassword] = React.useState<string>("");
+  const [longLived, setLongLived] = React.useState<boolean>(true);
+
+  // Additional form parameters
+  const [errorMessage, setErrorMessage] = React.useState<string | undefined>(
+    undefined
+  );
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
+
+  const handleLoginClicked = async () => {
+    await handleLogin(
+      {
+        username: username,
+        password: password,
+        long_lived: longLived,
+      },
+      () => {
+        setErrorMessage("Invalid username or password");
+      }
+    );
+  };
 
   return (
     <Grid
@@ -33,12 +57,21 @@ export default function LoginPage() {
             <Grid item textAlign="center">
               <Typography variant="h3">Login</Typography>
             </Grid>
+            {errorMessage !== undefined && (
+              <Grid item>
+                <Alert variant="filled" severity="error">
+                  {errorMessage}
+                </Alert>
+              </Grid>
+            )}
             <Grid item sx={{ width: "100%" }}>
               <FormControl variant="outlined" sx={{ width: "100%" }}>
                 <InputLabel htmlFor="username-input">Username</InputLabel>
                 <OutlinedInput
                   id="username-input"
                   label="Username"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
                 ></OutlinedInput>
               </FormControl>
             </Grid>
@@ -49,6 +82,8 @@ export default function LoginPage() {
                   id="password-input"
                   label="Password"
                   type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton
@@ -64,12 +99,21 @@ export default function LoginPage() {
             </Grid>
             <Grid item alignItems="left" sx={{ width: "100%" }}>
               <FormControlLabel
-                control={<Checkbox defaultChecked />}
+                control={
+                  <Checkbox
+                    checked={longLived}
+                    onChange={(event) => {
+                      setLongLived(event.target.checked);
+                    }}
+                  />
+                }
                 label="Remember me?"
               />
             </Grid>
             <Grid item>
-              <Button variant="contained">Login</Button>
+              <Button variant="contained" onClick={handleLoginClicked}>
+                Login
+              </Button>
             </Grid>
           </Grid>
         </Paper>
