@@ -1,10 +1,16 @@
 "use client";
 import { Button, Grid, Paper, Typography } from "@mui/material";
-import { handleLogout } from "../../authentication";
+import { handleLogout, isLoggedIn } from "../../authentication";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default function LoginPage() {
+export default function LogoutPage() {
   const router = useRouter();
+
+  // Go to login page if not logged in
+  useEffect(() => {
+    if (!isLoggedIn()) router.push("/login");
+  }, []);
 
   const handleLogoutClicked = async () => {
     await handleLogout(router);

@@ -90,6 +90,6 @@ export const fetchUser = (): Promise<User> => {
  */
 export const postLogout = (): Promise<void> => {
   return authenticated_api
-    .post(`${BASE_URL}/auth/login`)
+    .post(`${BASE_URL}/auth/logout`)
     .then((response) => {});
 };

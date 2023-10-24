@@ -15,12 +15,17 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import React from "react";
-import { handleLogin } from "../../authentication";
+import React, { useEffect } from "react";
+import { handleLogin, isLoggedIn } from "../../authentication";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  // Go to logout page if logged in already
+  useEffect(() => {
+    if (isLoggedIn()) router.push("/logout");
+  }, []);
 
   // Form parameters
   const [username, setUsername] = React.useState<string>("");
