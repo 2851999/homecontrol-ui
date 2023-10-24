@@ -82,3 +82,14 @@ authenticated_api.interceptors.response.use(
 export const fetchUser = (): Promise<User> => {
   return authenticated_api.get("/auth/user").then((response) => response.data);
 };
+
+/**
+ * Performs logout
+ *
+ * @returns
+ */
+export const postLogout = (): Promise<void> => {
+  return authenticated_api
+    .post(`${BASE_URL}/auth/login`)
+    .then((response) => {});
+};

@@ -17,8 +17,11 @@ import {
 } from "@mui/material";
 import React from "react";
 import { handleLogin } from "../../authentication";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   // Form parameters
   const [username, setUsername] = React.useState<string>("");
   const [password, setPassword] = React.useState<string>("");
@@ -30,6 +33,7 @@ export default function LoginPage() {
   );
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
 
+  // Handles when login button pressed
   const handleLoginClicked = async () => {
     await handleLogin(
       {
@@ -37,10 +41,18 @@ export default function LoginPage() {
         password: password,
         long_lived: longLived,
       },
+      router,
       () => {
         setErrorMessage("Invalid username or password");
       }
     );
+  };
+
+  // Handles when enter key is pressed in either text box
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
+    if (event.key === "Enter") handleLoginClicked();
   };
 
   return (
@@ -72,6 +84,7 @@ export default function LoginPage() {
                   label="Username"
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
+                  onKeyDown={handleKeyDown}
                 ></OutlinedInput>
               </FormControl>
             </Grid>
@@ -84,6 +97,7 @@ export default function LoginPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
+                  onKeyDown={handleKeyDown}
                   endAdornment={
                     <InputAdornment position="end">
                       <IconButton

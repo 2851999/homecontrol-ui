@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { postLogin } from "./api/auth";
+import { postLogin, postLogout } from "./api/auth";
 import { LoginPost, UserSession } from "./api/schemas/auth";
 
 export const getAccessToken = (): string | null => {
@@ -34,6 +34,7 @@ export const isLoggedIn = (): boolean => {
  */
 export const handleLogin = async (
   login_data: LoginPost,
+  router: any,
   onInvalidCredentials: () => void
 ) => {
   try {
@@ -42,10 +43,24 @@ export const handleLogin = async (
     setUserSession(response);
 
     // Go to root if successful
-    window.location.href = "/";
+    router.push("/");
   } catch (error) {
     // Check for invalid credentials
     if (axios.isAxiosError(error) && error.response?.status === 401)
       onInvalidCredentials();
   }
+};
+
+/**
+ * Attempts to logout
+ */
+export const handleLogout = async (router: any) => {
+  // Notify backend
+  await postLogout();
+
+  // Remove tokens
+  removeUserSession();
+
+  // Return to login
+  router.push("/login");
 };
