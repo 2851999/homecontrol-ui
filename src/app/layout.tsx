@@ -1,5 +1,6 @@
 import CustomThemeProvider from "../theme/CustomThemeProvider";
 import { CustomStoreProvider } from "..//state/CustomStoreProvider";
+import { AuthenticationProvider } from "../components/AuthenticationProvider";
 
 export default function RootLayout(props: { children: any }) {
   const { children } = props;
@@ -7,7 +8,9 @@ export default function RootLayout(props: { children: any }) {
     <html lang="en">
       <body>
         <CustomStoreProvider waitToLoad={true}>
-          <CustomThemeProvider>{children}</CustomThemeProvider>
+          <CustomThemeProvider>
+            <AuthenticationProvider>{children}</AuthenticationProvider>
+          </CustomThemeProvider>
         </CustomStoreProvider>
       </body>
     </html>

@@ -1,9 +1,9 @@
 "use client";
 import { Button } from "@mui/material";
 import Link from "next/link";
-import { Authenticated } from "../components/Authenticated";
 import { useAppDispatch } from "../state/hooks";
 import { toggleTheme } from "../state/settingsSlice";
+import { Authenticated } from "../components/Authenticated";
 
 export default function Home() {
   const dispatch = useAppDispatch();
@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <>
-      <Authenticated>
+      <Authenticated adminOnly>
         <Button component={Link} href="/login">
           Login Page
         </Button>

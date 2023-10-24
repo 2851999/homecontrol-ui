@@ -1,11 +1,21 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { fetchUser } from "../api/auth";
+import { useContext, useEffect, useMemo } from "react";
 import { LoadingPage } from "./LoadingPage";
-import { isLoggedIn } from "../authentication";
-import { User } from "../api/schemas/auth";
+import { User, UserAccountType } from "../api/schemas/auth";
+import React from "react";
+import { AuthenticationContext } from "./AuthenticationProvider";
+import { useRouter } from "next/navigation";
+import { Grid, Typography } from "@mui/material";
+
+/**
+ * @param adminOnly: Whether the page should only be accessible to admin
+ *                   accounts (when undefined assumes a value of false)
+ */
+export interface AuthenticatedProps {
+  adminOnly?: boolean;
+  children: any;
+}
 
 /**
  * Component to wrap around anything that should require an authenticated user
@@ -15,22 +25,35 @@ import { User } from "../api/schemas/auth";
  * @param props
  * @returns
  */
-export const Authenticated = (props: { children: any }) => {
-  const [user, setUser] = useState<User | null>(null);
+export const Authenticated = (props: AuthenticatedProps) => {
   const router = useRouter();
+  const user = useContext(AuthenticationContext);
 
-  useEffect(() => {
-    // Check if logged in
-    if (!isLoggedIn()) router.push("/login");
-    else {
-      // Fetch and assign the user as logged in
-      const getUser = async () => {
-        setUser(await fetchUser());
-      };
-      getUser();
-    }
-  }, []);
+  // Memo doesn't wait for render so should stop flicker
+  useMemo(() => {
+    // Redirect to login if needed
+    if (user === undefined) router.push("/login");
+  }, [user]);
 
   // Load until the user is obtained
-  return user === null ? <LoadingPage /> : <>{props.children}</>;
+  // Also ensure the user has the required access level
+  return user === null ? (
+    <LoadingPage />
+  ) : user !== undefined &&
+    props.adminOnly &&
+    user.account_type !== UserAccountType.ADMIN ? (
+    <Grid
+      container
+      direction="row"
+      justifyContent="center"
+      alignItems="center"
+      sx={{ minHeight: "100vh" }}
+    >
+      <Grid item>
+        <Typography variant="h1">Admin only</Typography>
+      </Grid>
+    </Grid>
+  ) : (
+    props.children
+  );
 };
