@@ -27,17 +27,17 @@ export interface AuthenticatedProps {
  */
 export const Authenticated = (props: AuthenticatedProps) => {
   const router = useRouter();
-  const user = useContext(AuthenticationContext);
+  const [user] = useContext(AuthenticationContext);
 
   // Memo doesn't wait for render so should stop flicker
-  useMemo(() => {
+  useEffect(() => {
     // Redirect to login if needed
     if (user === undefined) router.push("/login");
   }, [user]);
 
   // Load until the user is obtained
   // Also ensure the user has the required access level
-  return user === null ? (
+  return user === undefined || user === null ? (
     <LoadingPage />
   ) : user !== undefined &&
     props.adminOnly &&

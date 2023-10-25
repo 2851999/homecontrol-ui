@@ -15,12 +15,16 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { handleLogin, isLoggedIn } from "../../authentication";
 import { useRouter } from "next/navigation";
+import { AuthenticationContext } from "../../components/AuthenticationProvider";
 
 export default function LoginPage() {
   const router = useRouter();
+
+  // User
+  const [user, setUser] = useContext(AuthenticationContext);
 
   // Go to logout page if logged in already
   useEffect(() => {
@@ -47,8 +51,10 @@ export default function LoginPage() {
         long_lived: longLived,
       },
       router,
-      () => {
-        setErrorMessage("Invalid username or password");
+      setUser,
+      (errorResponse) => {
+        if (errorResponse.status === 401)
+          setErrorMessage(errorResponse.data.detail);
       }
     );
   };

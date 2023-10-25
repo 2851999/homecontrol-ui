@@ -1,7 +1,8 @@
 "use client";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { postLogin, postLogout } from "./api/auth";
-import { LoginPost, UserSession } from "./api/schemas/auth";
+import { LoginPost, User, UserSession } from "./api/schemas/auth";
+import { AnyARecord } from "dns";
 
 export const getAccessToken = (): string | null => {
   return localStorage.getItem("access_token");
@@ -29,25 +30,28 @@ export const isLoggedIn = (): boolean => {
  * Attempts to login
  *
  * @param login_data: Login credentials
- * @param onInvalidCredentials: Function to call if the credentials given are
- *                              invalid
+ * @param onErrorResponse: Function to call if an error response is given
  */
 export const handleLogin = async (
   login_data: LoginPost,
   router: any,
-  onInvalidCredentials: () => void
+  setUser: React.Dispatch<React.SetStateAction<User | null | undefined>>,
+  onErrorResponse: (errorResponse: AxiosResponse<any, any>) => void
 ) => {
   try {
     // Await login
     const response = await postLogin(login_data);
     setUserSession(response);
 
+    // Set the user to start loading
+    setUser(null);
+
     // Go to root if successful
     router.push("/");
   } catch (error) {
     // Check for invalid credentials
-    if (axios.isAxiosError(error) && error.response?.status === 401)
-      onInvalidCredentials();
+    if (axios.isAxiosError(error) && error.response)
+      onErrorResponse(error.response);
   }
 };
 

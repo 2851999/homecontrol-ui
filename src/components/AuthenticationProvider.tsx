@@ -7,8 +7,11 @@ import { User } from "../api/schemas/auth";
 import React from "react";
 
 export const AuthenticationContext = React.createContext<
-  User | null | undefined
->(null);
+  [
+    User | null | undefined,
+    React.Dispatch<React.SetStateAction<User | null | undefined>> | null
+  ]
+>([null, null]);
 
 /**
  * Component that obtains the current user and authenticates it
@@ -21,21 +24,19 @@ export const AuthenticationProvider = (props: { children: any }) => {
   const [user, setUser] = useState<User | null | undefined>(null);
 
   useEffect(() => {
-    // Check if logged in
+    // Check if should load the user
     if (!isLoggedIn()) setUser(undefined);
-    else {
-      // TODO: Account for user being disabled (as they are by default)
-
+    else if (user === null || user === undefined) {
       // Fetch and assign the user as logged in
       const getUser = async () => {
         setUser(await fetchUser());
       };
       getUser();
     }
-  }, []);
+  }, [user]);
 
   return (
-    <AuthenticationContext.Provider value={user}>
+    <AuthenticationContext.Provider value={[user, setUser]}>
       {props.children}
     </AuthenticationContext.Provider>
   );
