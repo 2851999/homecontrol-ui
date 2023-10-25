@@ -3,6 +3,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import {
   Alert,
+  Box,
   Button,
   Checkbox,
   FormControl,
@@ -11,13 +12,15 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   OutlinedInput,
   Paper,
   Typography,
 } from "@mui/material";
+import RouterLink from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useContext, useEffect } from "react";
 import { handleLogin, isLoggedIn } from "../../authentication";
-import { useRouter } from "next/navigation";
 import { AuthenticationContext } from "../../components/AuthenticationProvider";
 
 export default function LoginPage() {
@@ -44,19 +47,21 @@ export default function LoginPage() {
 
   // Handles when login button pressed
   const handleLoginClicked = async () => {
-    await handleLogin(
-      {
-        username: username,
-        password: password,
-        long_lived: longLived,
-      },
-      router,
-      setUser,
-      (errorResponse) => {
-        if (errorResponse.status === 401)
-          setErrorMessage(errorResponse.data.detail);
-      }
-    );
+    if (setUser) {
+      await handleLogin(
+        {
+          username: username,
+          password: password,
+          long_lived: longLived,
+        },
+        router,
+        setUser,
+        (errorResponse) => {
+          if (errorResponse.status === 401)
+            setErrorMessage(errorResponse.data.detail);
+        }
+      );
+    }
   };
 
   // Handles when enter key is pressed in either text box
@@ -88,7 +93,7 @@ export default function LoginPage() {
               </Grid>
             )}
             <Grid item sx={{ width: "100%" }}>
-              <FormControl variant="outlined" sx={{ width: "100%" }}>
+              <FormControl variant="outlined" fullWidth>
                 <InputLabel htmlFor="username-input">Username</InputLabel>
                 <OutlinedInput
                   id="username-input"
@@ -96,11 +101,12 @@ export default function LoginPage() {
                   value={username}
                   onChange={(event) => setUsername(event.target.value)}
                   onKeyDown={handleKeyDown}
+                  fullWidth
                 ></OutlinedInput>
               </FormControl>
             </Grid>
             <Grid item sx={{ width: "100%" }}>
-              <FormControl variant="outlined" sx={{ width: "100%" }}>
+              <FormControl variant="outlined" fullWidth>
                 <InputLabel htmlFor="password-input">Password</InputLabel>
                 <OutlinedInput
                   id="password-input"
@@ -119,6 +125,7 @@ export default function LoginPage() {
                       </IconButton>
                     </InputAdornment>
                   }
+                  fullWidth
                 ></OutlinedInput>
               </FormControl>
             </Grid>
@@ -134,6 +141,11 @@ export default function LoginPage() {
                 }
                 label="Remember me?"
               />
+            </Grid>
+            <Grid item textAlign="center" sx={{ width: "100%", mb: 1 }}>
+              <Link component={RouterLink} href="/register">
+                Create an account
+              </Link>
             </Grid>
             <Grid item>
               <Button variant="contained" onClick={handleLoginClicked}>

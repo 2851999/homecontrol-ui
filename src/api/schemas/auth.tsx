@@ -1,3 +1,8 @@
+export interface UserPost {
+  username: string;
+  password: string;
+}
+
 export interface LoginPost {
   username: string;
   password: string;

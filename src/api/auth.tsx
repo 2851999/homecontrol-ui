@@ -7,12 +7,24 @@ import {
   setUserSession,
 } from "../authentication";
 import { BASE_URL } from "./api";
-import { LoginPost, User, UserSession } from "./schemas/auth";
+import { LoginPost, User, UserPost, UserSession } from "./schemas/auth";
 
 /* Authenticated API that will have intercepts added to handle authentication */
 const authenticated_api = axios.create({
   baseURL: BASE_URL,
 });
+
+/**
+ * Creates a user
+ *
+ * @param user: User to be posted
+ * @returns
+ */
+export const postUser = (user: UserPost): Promise<User> => {
+  return axios
+    .post(`${BASE_URL}/auth/user`, user)
+    .then((response) => response.data);
+};
 
 /**
  * Performs login
