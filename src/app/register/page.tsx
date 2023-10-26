@@ -76,7 +76,11 @@ export default function RegisterPage() {
         if (!userResponse.enabled) setCreatedAccount("disabled");
         else setCreatedAccount("complete");
       } catch (error) {
-        if (isAxiosError(error)) setErrorMessage("Something went wrong...");
+        if (isAxiosError(error)) {
+          if (error.response?.status === 409)
+            setErrorMessage("An account with that username already exists");
+          else setErrorMessage("Something went wrong...");
+        }
       }
     } else setErrorMessage("Please complete the form");
   }, [password, passwordErrorMessage, username, usernameErrorMessage]);
