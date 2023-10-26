@@ -31,7 +31,7 @@ export default function LoginPage() {
 
   // Go to logout page if logged in already
   useEffect(() => {
-    if (isLoggedIn()) router.push("/logout");
+    if (isLoggedIn()) router.replace("/logout");
   }, []);
 
   // Form parameters
