@@ -3,9 +3,9 @@ import { Button } from "@mui/material";
 import Link from "next/link";
 import { useAppDispatch } from "../state/hooks";
 import { toggleTheme } from "../state/settingsSlice";
-import { Authenticated } from "../components/Authenticated";
+import { Authenticated, withAuth } from "../components/Authenticated";
 
-export default function Home() {
+function Home() {
   const dispatch = useAppDispatch();
 
   const handleToggleTheme = () => {
@@ -23,3 +23,5 @@ export default function Home() {
     </>
   );
 }
+
+export default withAuth(Home);

@@ -1,12 +1,11 @@
 "use client";
 
-import { useContext, useEffect, useMemo } from "react";
-import { LoadingPage } from "./LoadingPage";
-import { User, UserAccountType } from "../api/schemas/auth";
-import React from "react";
-import { AuthenticationContext } from "./AuthenticationProvider";
-import { useRouter } from "next/navigation";
 import { Grid, Typography } from "@mui/material";
+import { useRouter } from "next/navigation";
+import React, { useContext, useEffect } from "react";
+import { UserAccountType } from "../api/schemas/auth";
+import { AuthenticationContext } from "./AuthenticationProvider";
+import { LoadingPage } from "./LoadingPage";
 
 /**
  * @param adminOnly: Whether the page should only be accessible to admin
@@ -56,4 +55,25 @@ export const Authenticated = (props: AuthenticatedProps) => {
   ) : (
     props.children
   );
+};
+
+/**
+ * HOC for wrapping a component in Authenticated
+ *
+ * @param ComponentToWrap - Component to render as a child of of Authenticated
+ * @param authProps - Props to pass to Authenticated
+ * @returns
+ */
+export const withAuth = <P,>(
+  ComponentToWrap: React.ComponentType<P>,
+  authProps?: AuthenticatedProps
+) => {
+  const WrappedComponent = (children: any, ...props: any[]) => {
+    return (
+      <Authenticated {...authProps}>
+        <ComponentToWrap {...(props as P)}>{children}</ComponentToWrap>
+      </Authenticated>
+    );
+  };
+  return WrappedComponent;
 };
