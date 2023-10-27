@@ -14,12 +14,10 @@ function Home() {
 
   return (
     <>
-      <Authenticated adminOnly>
-        <Button component={Link} href="/login">
-          Login Page
-        </Button>
-        <Button onClick={handleToggleTheme}>Dark mode toggle</Button>
-      </Authenticated>
+      <Button component={Link} href="/login">
+        Login Page
+      </Button>
+      <Button onClick={handleToggleTheme}>Dark mode toggle</Button>
     </>
   );
 }
