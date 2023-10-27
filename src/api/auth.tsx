@@ -1,5 +1,10 @@
 "use client";
-import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import {
+  UseMutationResult,
+  UseQueryResult,
+  useMutation,
+  useQuery,
+} from "@tanstack/react-query";
 import axios, { AxiosError, isAxiosError } from "axios";
 import {
   getAccessToken,
@@ -8,7 +13,13 @@ import {
   setUserSession,
 } from "../authentication";
 import { BASE_URL } from "./api";
-import { LoginPost, User, UserPost, UserSession } from "./schemas/auth";
+import {
+  LoginPost,
+  User,
+  UserPatch,
+  UserPost,
+  UserSession,
+} from "./schemas/auth";
 
 /* Authenticated API that will have intercepts added to handle authentication */
 const authenticated_api = axios.create({
@@ -115,5 +126,29 @@ export const useUsers = (): UseQueryResult<User[], AxiosError> => {
   return useQuery<User[], AxiosError>({
     queryKey: ["users"],
     queryFn: fetchUsers,
+  });
+};
+
+export const patchUser = (
+  userId: string,
+  userData: UserPatch
+): Promise<User> => {
+  return authenticated_api
+    .patch(`${BASE_URL}/auth/user/${userId}`, userData)
+    .then((response) => {
+      return response.data;
+    });
+};
+
+export const useMutateUser = (): UseMutationResult<
+  User,
+  AxiosError,
+  { userId: string; userData: UserPatch },
+  any
+> => {
+  return useMutation({
+    mutationFn: (data: { userId: string; userData: UserPatch }) => {
+      return patchUser(data.userId, data.userData);
+    },
   });
 };

@@ -1,6 +1,23 @@
+export enum UserAccountType {
+  DEFAULT = "default",
+  ADMIN = "admin",
+}
+
+export interface User {
+  id: string;
+  username: string;
+  account_type: UserAccountType;
+  enabled: boolean;
+}
+
 export interface UserPost {
   username: string;
   password: string;
+}
+
+export interface UserPatch {
+  account_type?: UserAccountType;
+  enabled?: boolean;
 }
 
 export interface LoginPost {
@@ -14,16 +31,4 @@ export interface UserSession {
   user_id: string;
   access_token: string;
   refresh_token: string;
-}
-
-export enum UserAccountType {
-  DEFAULT = "default",
-  ADMIN = "admin",
-}
-
-export interface User {
-  id: string;
-  username: string;
-  account_type: UserAccountType;
-  enabled: boolean;
 }
