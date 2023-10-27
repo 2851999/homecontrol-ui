@@ -1,5 +1,6 @@
 "use client";
-import axios, { isAxiosError } from "axios";
+import { UseQueryResult, useQuery } from "@tanstack/react-query";
+import axios, { AxiosError, isAxiosError } from "axios";
 import {
   getAccessToken,
   getRefreshToken,
@@ -104,4 +105,15 @@ export const postLogout = (): Promise<void> => {
   return authenticated_api
     .post(`${BASE_URL}/auth/logout`)
     .then((response) => {});
+};
+
+export const fetchUsers = (): Promise<User[]> => {
+  return authenticated_api.get("/auth/users").then((response) => response.data);
+};
+
+export const useUsers = (): UseQueryResult<User[], AxiosError> => {
+  return useQuery<User[], AxiosError>({
+    queryKey: ["users"],
+    queryFn: fetchUsers,
+  });
 };
