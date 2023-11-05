@@ -1,9 +1,9 @@
 "use client";
 import { Button } from "@mui/material";
 import Link from "next/link";
+import { withAuth } from "../components/Authenticated";
 import { useAppDispatch } from "../state/hooks";
 import { toggleTheme } from "../state/settingsSlice";
-import { Authenticated, withAuth } from "../components/Authenticated";
 
 function Home() {
   const dispatch = useAppDispatch();

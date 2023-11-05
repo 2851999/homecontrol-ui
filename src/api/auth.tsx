@@ -140,7 +140,7 @@ export const patchUser = (
     });
 };
 
-export const useMutateUser = (): UseMutationResult<
+export const useEditUser = (): UseMutationResult<
   User,
   AxiosError,
   { userId: string; userData: UserPatch },
@@ -149,6 +149,23 @@ export const useMutateUser = (): UseMutationResult<
   return useMutation({
     mutationFn: (data: { userId: string; userData: UserPatch }) => {
       return patchUser(data.userId, data.userData);
+    },
+  });
+};
+
+export const deleteUser = (userId: string): Promise<void> => {
+  return authenticated_api.delete(`${BASE_URL}/auth/user/${userId}`);
+};
+
+export const useDeleteUser = (): UseMutationResult<
+  void,
+  AxiosError,
+  string,
+  any
+> => {
+  return useMutation({
+    mutationFn: (userId: string) => {
+      return deleteUser(userId);
     },
   });
 };
