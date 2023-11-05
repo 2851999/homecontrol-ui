@@ -1,3 +1,4 @@
+"use client";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
@@ -14,19 +15,22 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AuthenticatedComponent } from "./Authenticated";
+import { AccountMenu } from "./AccountMenu";
 
 /* Specific paths that the app bar should not be shown on */
 const hiddenPathnames: string[] = ["/logout", "/login", "/register"];
 
 interface Route {
+  // Text to display in the menu
   text: string;
+  // Path to link to when clicked
   path: string;
 }
 
 /* Specific admin routes to have navigation for */
-const adminRoutes: Route[] = [{ text: "Users", path: "/admin/users" }];
+const ADMIN_ROUTES: Route[] = [{ text: "Users", path: "/admin/users" }];
 
 export const HomeControlAppBar = () => {
   // State of the navigation drawer
@@ -34,11 +38,6 @@ export const HomeControlAppBar = () => {
 
   // Don't show on certain pages
   const pathname = usePathname();
-
-  // Close the navigation drawer when a link inside it is clicked
-  useEffect(() => {
-    setDrawerOpen(false);
-  }, [pathname]);
 
   return hiddenPathnames.includes(pathname) ? null : (
     <>
@@ -58,7 +57,7 @@ export const HomeControlAppBar = () => {
           >
             <MenuIcon />
           </IconButton>
-          <Button component={Link} href="/">
+          <Button component={Link} href="/" sx={{ marginRight: "auto" }}>
             <Typography
               variant="h6"
               color="primary.contrastText"
@@ -67,6 +66,7 @@ export const HomeControlAppBar = () => {
               HomeControl
             </Typography>
           </Button>
+          <AccountMenu />
         </Toolbar>
       </AppBar>
       <SwipeableDrawer
@@ -75,13 +75,18 @@ export const HomeControlAppBar = () => {
         onOpen={() => setDrawerOpen(true)}
         onClose={() => setDrawerOpen(false)}
       >
-        <Box sx={{ width: 250 }} marginTop={7} role="presentation">
+        <Box
+          sx={{ width: 250 }}
+          marginTop={7}
+          role="presentation"
+          onClick={() => setDrawerOpen(false)}
+        >
           <AuthenticatedComponent adminOnly>
             <Typography variant="h5" px={2}>
               Admin
             </Typography>
             <List disablePadding>
-              {adminRoutes.map((route: Route) => (
+              {ADMIN_ROUTES.map((route: Route) => (
                 <ListItem
                   key={route.path}
                   component={Link}
