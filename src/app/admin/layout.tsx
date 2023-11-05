@@ -1,6 +1,8 @@
 "use client";
-import { Authenticated } from "../../components/Authenticated";
+import { AuthenticatedPage } from "../../components/Authenticated";
 
 export default function AdminLayout(props: { children: any }) {
-  return <Authenticated adminOnly={true}>{props.children}</Authenticated>;
+  return (
+    <AuthenticatedPage adminOnly={true}>{props.children}</AuthenticatedPage>
+  );
 }

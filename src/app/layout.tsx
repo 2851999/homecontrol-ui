@@ -3,6 +3,7 @@ import CustomThemeProvider from "../theme/CustomThemeProvider";
 import { CustomStoreProvider } from "..//state/CustomStoreProvider";
 import { AuthenticationProvider } from "../components/AuthenticationProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HomeControlAppBar } from "../components/HomeControlAppBar";
 
 export default function RootLayout(props: { children: any }) {
   const { children } = props;
@@ -16,7 +17,10 @@ export default function RootLayout(props: { children: any }) {
         <CustomStoreProvider waitToLoad={true}>
           <CustomThemeProvider>
             <QueryClientProvider client={queryClient}>
-              <AuthenticationProvider>{children}</AuthenticationProvider>
+              <AuthenticationProvider>
+                <HomeControlAppBar />
+                {children}
+              </AuthenticationProvider>
             </QueryClientProvider>
           </CustomThemeProvider>
         </CustomStoreProvider>

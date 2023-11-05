@@ -17,18 +17,17 @@ export interface AuthenticatedProps {
 }
 
 /**
- * Component to wrap around anything that should require an authenticated user
+ * Component to wrap around a page that should require an authenticated user
  *
  * Will redirect to the login page if the user isn't logged in
  *
  * @param props
  * @returns
  */
-export const Authenticated = (props: AuthenticatedProps) => {
+export const AuthenticatedPage = (props: AuthenticatedProps) => {
   const router = useRouter();
   const [user] = useContext(AuthenticationContext);
 
-  // Memo doesn't wait for render so should stop flicker
   useEffect(() => {
     // Redirect to login if needed
     if (user === undefined) router.push("/login");
@@ -58,10 +57,25 @@ export const Authenticated = (props: AuthenticatedProps) => {
 };
 
 /**
- * HOC for wrapping a component in Authenticated
+ * Component to wrap around a component that should only be seen by an authenticated user
  *
- * @param ComponentToWrap - Component to render as a child of of Authenticated
- * @param authProps - Props to pass to Authenticated
+ * @param props
+ * @returns
+ */
+export const AuthenticatedComponent = (props: AuthenticatedProps) => {
+  const [user] = useContext(AuthenticationContext);
+
+  return !user ||
+    (props.adminOnly && user.account_type !== UserAccountType.ADMIN)
+    ? null
+    : props.children;
+};
+
+/**
+ * HOC for wrapping a component in AuthenticatedPage
+ *
+ * @param ComponentToWrap - Component to render as a child of of AuthenticatedPage
+ * @param authProps - Props to pass to AuthenticatedPage
  * @returns
  */
 export const withAuth = <P,>(
@@ -70,9 +84,9 @@ export const withAuth = <P,>(
 ) => {
   const WrappedComponent = (children: any, ...props: any[]) => {
     return (
-      <Authenticated {...authProps}>
+      <AuthenticatedPage {...authProps}>
         <ComponentToWrap {...(props as P)}>{children}</ComponentToWrap>
-      </Authenticated>
+      </AuthenticatedPage>
     );
   };
   return WrappedComponent;
