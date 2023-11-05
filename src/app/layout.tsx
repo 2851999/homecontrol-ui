@@ -13,7 +13,7 @@ export default function RootLayout(props: { children: any }) {
 
   return (
     <html lang="en">
-      <body>
+      <body style={{ margin: 0 }}>
         <CustomStoreProvider waitToLoad={true}>
           <CustomThemeProvider>
             <QueryClientProvider client={queryClient}>
