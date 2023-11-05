@@ -6,13 +6,17 @@ import { AccountMenu } from "./AccountMenu";
 import { NavigationMenu } from "./NavigationMenu";
 
 /* Specific paths that the app bar should not be shown on */
-const hiddenPathnames: string[] = ["/logout", "/login", "/register"];
+const HIDDEN_PATHNAMES: string[] = ["/logout", "/login", "/register"];
+
+export const isAppBarHidden = (pathname: string): boolean => {
+  return HIDDEN_PATHNAMES.includes(pathname);
+};
 
 export const HomeControlAppBar = () => {
   // Don't show on certain pages
   const pathname = usePathname();
 
-  return hiddenPathnames.includes(pathname) ? null : (
+  return isAppBarHidden(pathname) ? null : (
     <>
       <AppBar
         position="relative"

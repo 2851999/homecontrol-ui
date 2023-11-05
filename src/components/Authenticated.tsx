@@ -1,11 +1,12 @@
 "use client";
 
 import { Grid, Typography } from "@mui/material";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useContext, useEffect } from "react";
 import { UserAccountType } from "../api/schemas/auth";
 import { AuthenticationContext } from "./AuthenticationProvider";
 import { LoadingPage } from "./LoadingPage";
+import { isAppBarHidden } from "./HomeControlAppBar";
 
 /**
  * @param adminOnly: Whether the page should only be accessible to admin
@@ -28,6 +29,9 @@ export const AuthenticatedPage = (props: AuthenticatedProps) => {
   const router = useRouter();
   const [user] = useContext(AuthenticationContext);
 
+  const pathname = usePathname();
+  const minHeight = isAppBarHidden(pathname) ? "100vh" : "calc(100vh - 48px)";
+
   useEffect(() => {
     // Redirect to login if needed
     if (user === undefined) router.push("/login");
@@ -36,7 +40,7 @@ export const AuthenticatedPage = (props: AuthenticatedProps) => {
   // Load until the user is obtained
   // Also ensure the user has the required access level
   return user === undefined || user === null ? (
-    <LoadingPage />
+    <LoadingPage height={minHeight} />
   ) : user !== undefined &&
     props.adminOnly &&
     user.account_type !== UserAccountType.ADMIN ? (
@@ -45,7 +49,7 @@ export const AuthenticatedPage = (props: AuthenticatedProps) => {
       direction="row"
       justifyContent="center"
       alignItems="center"
-      sx={{ minHeight: "100vh" }}
+      sx={{ minHeight: minHeight }}
     >
       <Grid item>
         <Typography variant="h1">Admin only</Typography>
