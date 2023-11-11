@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  api:
+  ui:
     build: .
     working_dir: /homecontrol-ui
     command: "yarn dev"
