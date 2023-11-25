@@ -9,7 +9,6 @@ import {
   GridRenderCellParams,
   GridRowParams,
 } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
 import { useDeleteUser, useEditUser, useUsers } from "../../../api/auth";
 import { User, UserPatch } from "../../../api/schemas/auth";
 import { LoadingPage } from "../../../components/LoadingPage";
@@ -18,15 +17,9 @@ export default function UsersPage() {
   // Obtain a list of all users
   const usersQuery = useUsers();
 
+  // User mutations
   const userEditMutation = useEditUser();
   const userDeleteMutation = useDeleteUser();
-
-  const [rows, setRows] = useState<User[] | undefined>(undefined);
-
-  useEffect(() => {
-    if (!usersQuery.isLoading && usersQuery.data !== undefined)
-      setRows(usersQuery.data);
-  }, [usersQuery.isLoading, usersQuery.data]);
 
   // Handles updating data in the table by mutating the user
   // prior to rendering the new values
@@ -48,7 +41,6 @@ export default function UsersPage() {
 
   const handleDeleteClicked = async (params: GridRowParams) => {
     await userDeleteMutation.mutate(params.id as string);
-    setRows(rows?.filter((row: User) => row.id !== params.id));
   };
 
   // Columns for the users table
@@ -97,13 +89,13 @@ export default function UsersPage() {
     },
   ];
 
-  return usersQuery.isLoading || rows === undefined ? (
+  return usersQuery.isLoading || usersQuery.data === undefined ? (
     <LoadingPage />
   ) : (
     <DataGrid
-      rows={rows}
+      rows={usersQuery.data}
       columns={usersTableColumns}
       processRowUpdate={handleProcessRowUpdate}
-    ></DataGrid>
+    />
   );
 }

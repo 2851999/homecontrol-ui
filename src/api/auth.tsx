@@ -4,6 +4,7 @@ import {
   UseQueryResult,
   useMutation,
   useQuery,
+  useQueryClient,
 } from "@tanstack/react-query";
 import axios, { AxiosError, isAxiosError } from "axios";
 import {
@@ -22,7 +23,7 @@ import {
 } from "./schemas/auth";
 
 /* Authenticated API that will have intercepts added to handle authentication */
-const authenticated_api = axios.create({
+export const authenticated_api = axios.create({
   baseURL: BASE_URL,
 });
 
@@ -163,9 +164,13 @@ export const useDeleteUser = (): UseMutationResult<
   string,
   any
 > => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (userId: string) => {
       return deleteUser(userId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
     },
   });
 };

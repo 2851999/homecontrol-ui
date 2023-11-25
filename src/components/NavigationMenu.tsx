@@ -167,6 +167,7 @@ export const NavigationMenu = () => {
                 else if (route.routes)
                   return (
                     <NavigationSection
+                      key={`${route.text}-section`}
                       text={route.text}
                       routes={route.routes}
                       offset={2}
