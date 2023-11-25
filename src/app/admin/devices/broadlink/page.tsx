@@ -16,25 +16,36 @@ import {
 import { DataGrid, GridColDef, GridToolbarContainer } from "@mui/x-data-grid";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
-import { useACDevices, useAddACDevice } from "../../../../api/aircon";
-import { ACDevice, ACDevicePost } from "../../../../api/schemas/aircon";
+import {
+  useAddBroadlinkDevice,
+  useBroadlinkDevices,
+} from "../../../../api/broadlink";
+import {
+  BroadlinkDevice,
+  BroadlinkDevicePost,
+} from "../../../../api/schemas/broadlink";
 import { LoadingPage } from "../../../../components/LoadingPage";
+
+// TODO: Unify this dialog and the one for AC as identical (apart from types)
 
 function AddDialogue() {
   // Dialog state
   const [open, setOpen] = useState<boolean>(false);
-  const [data, setData] = useState<ACDevicePost>({ name: "", ip_address: "" });
-  const [formErrors, setFormErrors] = useState<ACDevicePost>({
+  const [data, setData] = useState<BroadlinkDevicePost>({
+    name: "",
+    ip_address: "",
+  });
+  const [formErrors, setFormErrors] = useState<BroadlinkDevicePost>({
     name: "",
     ip_address: "",
   });
   const [otherError, setOtherError] = useState<boolean>(false);
 
   // Mutations
-  const deviceAddMutation = useAddACDevice();
+  const deviceAddMutation = useAddBroadlinkDevice();
 
   // Validates the form, returning any errors to display
-  const validateForm = (): ACDevicePost => {
+  const validateForm = (): BroadlinkDevicePost => {
     return {
       name: !!!data.name ? "Name cannot be empty" : "",
       ip_address: !!!data.ip_address
@@ -48,7 +59,7 @@ function AddDialogue() {
   };
 
   // Resets appropriate form errors when a field is changed
-  const handleFormChange = (newData: ACDevicePost) => {
+  const handleFormChange = (newData: BroadlinkDevicePost) => {
     if (newData.name != data.name && !!formErrors.name)
       setFormErrors({ ...formErrors, name: "" });
     if (newData.ip_address != data.ip_address && !!formErrors.ip_address)
@@ -165,11 +176,11 @@ function Toolbar() {
   );
 }
 
-export default function ACPage() {
-  // Obtain all the registered AC units
-  const devicesQuery = useACDevices();
+export default function BroadlinkPage() {
+  // Obtain all the registered broadlink devices
+  const devicesQuery = useBroadlinkDevices();
 
-  const [rows, setRows] = useState<ACDevice[] | undefined>(undefined);
+  const [rows, setRows] = useState<BroadlinkDevice[] | undefined>(undefined);
 
   useEffect(() => {
     if (!devicesQuery.isLoading && devicesQuery.data !== undefined)

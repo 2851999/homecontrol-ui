@@ -94,13 +94,10 @@ authenticated_api.interceptors.response.use(
           // Refresh token expired so remove session and go back to login
           removeUserSession();
           window.location.href = "/login";
-
-          // Return something just to avoid error in then
-          return { data: null };
         }
-        throw error;
+        return Promise.reject(error);
       }
-    }
+    } else return Promise.reject(error);
   }
 );
 
