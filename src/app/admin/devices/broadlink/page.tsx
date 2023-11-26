@@ -1,6 +1,7 @@
 "use client";
 
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Button,
@@ -13,12 +14,19 @@ import {
   Grid,
   TextField,
 } from "@mui/material";
-import { DataGrid, GridColDef, GridToolbarContainer } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColDef,
+  GridRowParams,
+  GridToolbarContainer,
+} from "@mui/x-data-grid";
 import { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import {
   useAddBroadlinkDevice,
   useBroadlinkDevices,
+  useDeleteBroadlinkDevice,
 } from "../../../../api/broadlink";
 import {
   BroadlinkDevice,
@@ -182,15 +190,37 @@ export default function BroadlinkPage() {
 
   const [rows, setRows] = useState<BroadlinkDevice[] | undefined>(undefined);
 
+  // Mutations
+  const deviceDeleteMutation = useDeleteBroadlinkDevice();
+
   useEffect(() => {
     if (!devicesQuery.isLoading && devicesQuery.data !== undefined)
       setRows(devicesQuery.data);
   }, [devicesQuery.isLoading, devicesQuery.data]);
 
+  const handleDeleteClicked = async (params: GridRowParams) => {
+    await deviceDeleteMutation.mutate(params.id as string);
+  };
+
   const devicesTableColumns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
     { field: "name", headerName: "Name", flex: 1 },
     { field: "ip_address", headerName: "IP Address", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      type: "actions",
+      getActions: (params: GridRowParams) => {
+        return [
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            key="delete"
+            onClick={() => handleDeleteClicked(params)}
+          />,
+        ];
+      },
+    },
   ];
 
   return devicesQuery.isLoading || rows === undefined ? (

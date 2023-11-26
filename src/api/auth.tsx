@@ -111,12 +111,10 @@ export const fetchUser = (): Promise<User> => {
  * @returns
  */
 export const postLogout = (): Promise<void> => {
-  return authenticated_api
-    .post(`${BASE_URL}/auth/logout`)
-    .then((response) => {});
+  return authenticated_api.post("/auth/logout").then((response) => {});
 };
 
-export const fetchUsers = (): Promise<User[]> => {
+const fetchUsers = (): Promise<User[]> => {
   return authenticated_api.get("/auth/users").then((response) => response.data);
 };
 
@@ -127,12 +125,9 @@ export const useUsers = (): UseQueryResult<User[], AxiosError> => {
   });
 };
 
-export const patchUser = (
-  userId: string,
-  userData: UserPatch
-): Promise<User> => {
+const patchUser = (userId: string, userData: UserPatch): Promise<User> => {
   return authenticated_api
-    .patch(`${BASE_URL}/auth/user/${userId}`, userData)
+    .patch(`/auth/user/${userId}`, userData)
     .then((response) => {
       return response.data;
     });
@@ -151,8 +146,8 @@ export const useEditUser = (): UseMutationResult<
   });
 };
 
-export const deleteUser = (userId: string): Promise<void> => {
-  return authenticated_api.delete(`${BASE_URL}/auth/user/${userId}`);
+const deleteUser = (userId: string): Promise<void> => {
+  return authenticated_api.delete(`/auth/user/${userId}`);
 };
 
 export const useDeleteUser = (): UseMutationResult<

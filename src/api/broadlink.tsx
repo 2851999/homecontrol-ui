@@ -49,3 +49,24 @@ export const useAddBroadlinkDevice = (): UseMutationResult<
     },
   });
 };
+
+const deleteBroadlinkDevice = (device_id: string): Promise<void> => {
+  return authenticated_api.delete(`/devices/broadlink/${device_id}`);
+};
+
+export const useDeleteBroadlinkDevice = (): UseMutationResult<
+  void,
+  AxiosError,
+  string,
+  any
+> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (device_id: string) => {
+      return deleteBroadlinkDevice(device_id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["BroadlinkDevices"] });
+    },
+  });
+};
