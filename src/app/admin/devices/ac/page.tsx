@@ -222,6 +222,7 @@ export default function ACPage() {
       rows={rows}
       columns={devicesTableColumns}
       slots={{ toolbar: Toolbar }}
+      autoHeight
     />
   );
 }

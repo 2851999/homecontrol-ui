@@ -9,7 +9,7 @@ import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
 import { BroadlinkDevice, BroadlinkDevicePost } from "./schemas/broadlink";
 
-export const fetchBroadlinkDevices = (): Promise<BroadlinkDevice[]> => {
+const fetchBroadlinkDevices = (): Promise<BroadlinkDevice[]> => {
   return authenticated_api
     .get("/devices/broadlink")
     .then((response) => response.data);
@@ -25,7 +25,7 @@ export const useBroadlinkDevices = (): UseQueryResult<
   });
 };
 
-export const postBroadlinkDevice = (
+const postBroadlinkDevice = (
   device: BroadlinkDevicePost
 ): Promise<BroadlinkDevice> => {
   return authenticated_api

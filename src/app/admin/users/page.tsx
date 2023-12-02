@@ -96,6 +96,7 @@ export default function UsersPage() {
       rows={usersQuery.data}
       columns={usersTableColumns}
       processRowUpdate={handleProcessRowUpdate}
+      autoHeight
     />
   );
 }

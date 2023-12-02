@@ -230,6 +230,7 @@ export default function BroadlinkPage() {
       rows={rows}
       columns={devicesTableColumns}
       slots={{ toolbar: Toolbar }}
+      autoHeight
     />
   );
 }
