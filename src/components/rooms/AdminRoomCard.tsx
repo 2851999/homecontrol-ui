@@ -1,6 +1,7 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
+import { useDeleteRoom } from "../../api/rooms";
 import { ControlType, Room } from "../../api/schemas/rooms";
 import { AdminControllerAC } from "./AdminControllerAC";
 import { AdminControllerBroadlink } from "./AdminControllerBroadlink";
@@ -11,6 +12,9 @@ export interface AdminRoomCardProps {
 }
 
 export const AdminRoomCard = (props: AdminRoomCardProps) => {
+  // Room mutations
+  const roomDeleteMutation = useDeleteRoom();
+
   return (
     <Card>
       <CardContent>
@@ -46,7 +50,12 @@ export const AdminRoomCard = (props: AdminRoomCardProps) => {
           <IconButton>
             <EditIcon />
           </IconButton>
-          <IconButton color="error">
+          <IconButton
+            color="error"
+            onClick={() => {
+              roomDeleteMutation.mutate(props.room.id);
+            }}
+          >
             <DeleteIcon />
           </IconButton>
         </Box>

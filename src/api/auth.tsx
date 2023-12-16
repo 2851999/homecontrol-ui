@@ -158,9 +158,7 @@ export const useDeleteUser = (): UseMutationResult<
 > => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (userId: string) => {
-      return deleteUser(userId);
-    },
+    mutationFn: (userId: string) => deleteUser(userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
     },

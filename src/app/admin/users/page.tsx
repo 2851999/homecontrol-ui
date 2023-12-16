@@ -39,8 +39,8 @@ export default function UsersPage() {
     return newRow;
   };
 
-  const handleDeleteClicked = async (params: GridRowParams) => {
-    await userDeleteMutation.mutate(params.id as string);
+  const handleDeleteClicked = (params: GridRowParams) => {
+    userDeleteMutation.mutate(params.id as string);
   };
 
   // Columns for the users table
