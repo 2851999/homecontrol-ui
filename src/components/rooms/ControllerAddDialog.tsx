@@ -3,6 +3,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -18,9 +19,53 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { ControlType, RoomController } from "../../api/schemas/rooms";
+import { useACDevices } from "../../api/aircon";
+
+interface ControllerSelectStepACProps {
+  onControllerUpdated: (newController: RoomController) => void;
+}
+
+const ControllerSelectStepAC = (props: ControllerSelectStepACProps) => {
+  // Existing AC devices
+  const devicesQuery = useACDevices();
+
+  return devicesQuery.isLoading || devicesQuery.data === undefined ? (
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <CircularProgress />
+    </Box>
+  ) : (
+    <FormControl fullWidth>
+      <InputLabel id="device-select-label">AC Device</InputLabel>
+      <Select
+        labelId="type-select-label"
+        id="type-select"
+        label="AC Device"
+        onChange={(event) =>
+          props.onControllerUpdated({
+            control_type: ControlType.AC,
+            id: event.target.value as string,
+          })
+        }
+      >
+        {devicesQuery.data.map((device) => (
+          <MenuItem key={device.id} value={device.id}>
+            {device.name}
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
 
 interface ControllerAddDialogProps {
   renderButton: (onClick: () => void) => void;
+  addController: (controller: RoomController) => void;
 }
 
 const ADD_DIALOGUE_STEPS = ["Type", "Select"];
@@ -33,10 +78,9 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
   const [activeStep, setActiveStep] = useState<number>(0);
 
   // Add form state
-  const [controller, setController] = useState<RoomController>({
-    control_type: ControlType.AC,
-    id: "",
-  });
+  const [controller, setController] = useState<RoomController | undefined>(
+    undefined
+  );
 
   const handleControlTypeChange = (event: SelectChangeEvent<ControlType>) => {
     const newControlType = event.target.value;
@@ -51,6 +95,13 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
     }
   };
 
+  const validateSelectStepComplete = (controller: RoomController) => {
+    switch (controller.control_type) {
+      case ControlType.AC:
+        return controller.id !== "";
+    }
+  };
+
   const getStepContent = (activeStep: number) => {
     switch (activeStep) {
       case 0:
@@ -61,7 +112,7 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
               labelId="type-select-label"
               id="type-select"
               label="Type"
-              value={controller.control_type}
+              value={controller?.control_type}
               onChange={handleControlTypeChange}
             >
               {Object.keys(ControlType).map((controlTypeKey) => (
@@ -78,6 +129,16 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
           </FormControl>
         );
       case 1:
+        switch (controller?.control_type) {
+          case ControlType.AC:
+            return (
+              <ControllerSelectStepAC
+                onControllerUpdated={(newController: RoomController) =>
+                  setController(newController)
+                }
+              />
+            );
+        }
         return null;
     }
   };
@@ -90,12 +151,17 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
     setActiveStep(activeStep + 1);
   };
 
-  const handleFinish = async () => {};
-
   // Reset everything on close
   const handleClose = () => {
     setOpen(false);
     setActiveStep(0);
+  };
+
+  const handleFinish = async () => {
+    if (controller !== undefined) {
+      props.addController(controller);
+      handleClose();
+    }
   };
 
   return (
@@ -120,9 +186,26 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
             Back
           </Button>
           {activeStep === ADD_DIALOGUE_STEPS.length - 1 ? (
-            <Button onClick={handleFinish}>Finish</Button>
+            <Button
+              disabled={
+                // Disable until the relevant details are selected
+                controller === undefined ||
+                !validateSelectStepComplete(controller)
+              }
+              onClick={handleFinish}
+            >
+              Finish
+            </Button>
           ) : (
-            <Button onClick={handleNext}>Next</Button>
+            <Button
+              disabled={
+                // Disable until the controller type is selected
+                controller === undefined
+              }
+              onClick={handleNext}
+            >
+              Next
+            </Button>
           )}
         </DialogActions>
       </Dialog>

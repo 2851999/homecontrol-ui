@@ -1,6 +1,7 @@
 "use client";
 
 import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Button,
@@ -8,14 +9,19 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  IconButton,
   Step,
   StepLabel,
   Stepper,
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { RoomPost } from "../../api/schemas/rooms";
+import { ControlType, RoomController, RoomPost } from "../../api/schemas/rooms";
+import { AdminControllerAC } from "./AdminControllerAC";
+import { AdminControllerBroadlink } from "./AdminControllerBroadlink";
+import { AdminControllerHueRoom } from "./AdminControllerHueRoom";
 import { ControllerAddDialog } from "./ControllerAddDialog";
+import { AdminController } from "./AdminController";
 
 interface RoomAddDialogProps {
   renderButton: (onClick: () => void) => void;
@@ -57,12 +63,38 @@ export const RoomAddDialog = (props: RoomAddDialogProps) => {
       case 1:
         return (
           <>
+            {room.controllers.map((controller, index) => (
+              <Box key={index} sx={{ display: "flex" }}>
+                <Box sx={{ width: "100%" }}>
+                  <AdminController controller={controller} />
+                </Box>
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    setRoom({
+                      ...room,
+                      controllers: room.controllers.filter(
+                        (value) => value !== controller
+                      ),
+                    });
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ))}{" "}
             <ControllerAddDialog
               renderButton={(onClick) => (
                 <Button startIcon={<AddIcon />} onClick={onClick}>
                   Add Controller
                 </Button>
               )}
+              addController={(controller: RoomController) =>
+                setRoom({
+                  ...room,
+                  controllers: [...room.controllers, controller],
+                })
+              }
             />
           </>
         );
