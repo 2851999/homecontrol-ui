@@ -37,6 +37,7 @@ const ADMIN_ROUTES: Route[] = [
       { text: "Broadlink", path: "/admin/devices/broadlink" },
     ],
   },
+  { text: "Rooms", path: "/admin/rooms" },
 ];
 
 interface NavigationButtonProps {

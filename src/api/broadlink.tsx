@@ -25,6 +25,21 @@ export const useBroadlinkDevices = (): UseQueryResult<
   });
 };
 
+const fetchBroadlinkDevice = (deviceId: string): Promise<BroadlinkDevice> => {
+  return authenticated_api
+    .get(`/devices/broadlink/${deviceId}`)
+    .then((response) => response.data);
+};
+
+export const useBroadlinkDevice = (
+  deviceId: string
+): UseQueryResult<BroadlinkDevice, AxiosError> => {
+  return useQuery<BroadlinkDevice, AxiosError>({
+    queryKey: ["BroadlinkDevice", deviceId],
+    queryFn: () => fetchBroadlinkDevice(deviceId),
+  });
+};
+
 const postBroadlinkDevice = (
   device: BroadlinkDevicePost
 ): Promise<BroadlinkDevice> => {

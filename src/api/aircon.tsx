@@ -22,6 +22,21 @@ export const useACDevices = (): UseQueryResult<ACDevice[], AxiosError> => {
   });
 };
 
+const fetchACDevice = (deviceId: string): Promise<ACDevice> => {
+  return authenticated_api
+    .get(`/devices/aircon/${deviceId}`)
+    .then((response) => response.data);
+};
+
+export const useACDevice = (
+  deviceId: string
+): UseQueryResult<ACDevice, AxiosError> => {
+  return useQuery<ACDevice, AxiosError>({
+    queryKey: ["ACDevice", deviceId],
+    queryFn: () => fetchACDevice(deviceId),
+  });
+};
+
 const postACDevice = (device: ACDevicePost): Promise<ACDevice> => {
   return authenticated_api
     .post("/devices/aircon", device)

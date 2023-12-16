@@ -37,6 +37,21 @@ export const useHueBridges = (): UseQueryResult<HueBridge[], AxiosError> => {
   });
 };
 
+const fetchHueBridge = (bridgeId: string): Promise<HueBridge> => {
+  return authenticated_api
+    .get(`/devices/hue/${bridgeId}`)
+    .then((response) => response.data);
+};
+
+export const useHueBridge = (
+  bridgeId: string
+): UseQueryResult<HueBridge, AxiosError> => {
+  return useQuery<HueBridge, AxiosError>({
+    queryKey: ["HueBridge", bridgeId],
+    queryFn: () => fetchHueBridge(bridgeId),
+  });
+};
+
 // Returns null when waiting for button press
 const postHueBridge = (bridge: HueBridgePost): Promise<HueBridge | null> => {
   return authenticated_api.post("/devices/hue", bridge).then((response) => {
