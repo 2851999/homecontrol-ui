@@ -156,17 +156,15 @@ function AddDialogue(props: { currentBridges: HueBridge[] }) {
         );
       case 1:
         return (
-          <>
-            <TextField
-              label="Name"
-              value={name}
-              required
-              onChange={(event) => handleNameChange(event.target.value)}
-              error={!!nameError}
-              helperText={nameError}
-              fullWidth
-            />
-          </>
+          <TextField
+            label="Name"
+            value={name}
+            required
+            onChange={(event) => handleNameChange(event.target.value)}
+            error={!!nameError}
+            helperText={nameError}
+            fullWidth
+          />
         );
       case 2:
         return (

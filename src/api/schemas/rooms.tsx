@@ -30,3 +30,8 @@ export interface Room {
   name: string;
   controllers: RoomController[];
 }
+
+export interface RoomPost {
+  name: string;
+  controllers: RoomController[];
+}
