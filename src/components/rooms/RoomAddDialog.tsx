@@ -16,12 +16,9 @@ import {
   TextField,
 } from "@mui/material";
 import { useState } from "react";
-import { ControlType, RoomController, RoomPost } from "../../api/schemas/rooms";
-import { AdminControllerAC } from "./AdminControllerAC";
-import { AdminControllerBroadlink } from "./AdminControllerBroadlink";
-import { AdminControllerHueRoom } from "./AdminControllerHueRoom";
-import { ControllerAddDialog } from "./ControllerAddDialog";
+import { RoomController, RoomPost } from "../../api/schemas/rooms";
 import { AdminController } from "./AdminController";
+import { ControllerAddDialog } from "./ControllerAddDialog";
 
 interface RoomAddDialogProps {
   renderButton: (onClick: () => void) => void;
