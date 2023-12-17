@@ -35,3 +35,8 @@ export interface RoomPost {
   name: string;
   controllers: RoomController[];
 }
+
+export interface RoomPatch {
+  name?: string;
+  controllers?: RoomController[];
+}

@@ -5,7 +5,7 @@ import { Fab, Grid } from "@mui/material";
 import { useRooms } from "../../../api/rooms";
 import { LoadingPage } from "../../../components/LoadingPage";
 import { AdminRoomCard } from "../../../components/rooms/AdminRoomCard";
-import { RoomAddDialog } from "../../../components/rooms/RoomAddDialog";
+import { RoomDialog } from "../../../components/rooms/RoomDialog";
 
 export default function RoomsPage() {
   const roomsQuery = useRooms();
@@ -21,7 +21,7 @@ export default function RoomsPage() {
           </Grid>
         ))}
       </Grid>
-      <RoomAddDialog
+      <RoomDialog
         renderButton={(onClick) => (
           <Fab
             color="primary"

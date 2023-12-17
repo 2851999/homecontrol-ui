@@ -209,14 +209,18 @@ const ControllerSelectStepHueRoom = (
   );
 };
 
-interface ControllerAddDialogProps {
+interface ControllerDialogProps {
   renderButton: (onClick: () => void) => void;
-  addController: (controller: RoomController) => void;
+  // Only present if adding
+  addController?: (controller: RoomController) => void;
+  // Only present if editing
+  existingData?: RoomController;
+  editController?: (controller: RoomController) => void;
 }
 
 const ADD_DIALOGUE_STEPS = ["Type", "Select"];
 
-export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
+export const ControllerDialog = (props: ControllerDialogProps) => {
   // Dialog state
   const [open, setOpen] = useState<boolean>(false);
 
@@ -227,6 +231,11 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
   const [controller, setController] = useState<RoomController | undefined>(
     undefined
   );
+
+  // Assign controller when updated (when editing)
+  useEffect(() => {
+    if (props.existingData !== undefined) setController(props.existingData);
+  }, [props.existingData]);
 
   const handleControlTypeChange = (event: SelectChangeEvent<ControlType>) => {
     const newControlType = event.target.value;
@@ -322,11 +331,14 @@ export const ControllerAddDialog = (props: ControllerAddDialogProps) => {
   const handleClose = () => {
     setOpen(false);
     setActiveStep(0);
+    setController(props.existingData ? props.existingData : undefined);
   };
 
   const handleFinish = async () => {
     if (controller !== undefined) {
-      props.addController(controller);
+      if (props.addController !== undefined) props.addController(controller);
+      else if (props.editController !== undefined)
+        props.editController(controller);
       handleClose();
     }
   };

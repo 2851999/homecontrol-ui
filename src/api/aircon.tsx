@@ -51,9 +51,7 @@ export const useAddACDevice = (): UseMutationResult<
 > => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (device: ACDevicePost) => {
-      return postACDevice(device);
-    },
+    mutationFn: (device: ACDevicePost) => postACDevice(device),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ACDevices"] });
     },

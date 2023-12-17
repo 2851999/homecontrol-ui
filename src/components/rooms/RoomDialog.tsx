@@ -15,19 +15,22 @@ import {
   Stepper,
   TextField,
 } from "@mui/material";
-import { useState } from "react";
-import { RoomController, RoomPost } from "../../api/schemas/rooms";
+import { useEffect, useState } from "react";
+import { Room, RoomController, RoomPost } from "../../api/schemas/rooms";
 import { AdminController } from "./AdminController";
-import { ControllerAddDialog } from "./ControllerAddDialog";
-import { useAddRoom } from "../../api/rooms";
+import { ControllerDialog } from "./ControllerDialog";
+import { useAddRoom, usePatchRoom } from "../../api/rooms";
+import EditIcon from "@mui/icons-material/Edit";
 
-interface RoomAddDialogProps {
+interface RoomDialogProps {
   renderButton: (onClick: () => void) => void;
+  // Only present if editing
+  existingData?: Room;
 }
 
 const ADD_DIALOGUE_STEPS = ["Name", "Controllers"];
 
-export const RoomAddDialog = (props: RoomAddDialogProps) => {
+export const RoomDialog = (props: RoomDialogProps) => {
   // Dialog state
   const [open, setOpen] = useState<boolean>(false);
 
@@ -38,8 +41,15 @@ export const RoomAddDialog = (props: RoomAddDialogProps) => {
   const [room, setRoom] = useState<RoomPost>({ name: "", controllers: [] });
   const [nameError, setNameError] = useState<string | undefined>(undefined);
 
+  // Assign room when updated (when editing)
+  useEffect(() => {
+    if (props.existingData !== undefined)
+      setRoom(props.existingData as RoomPost);
+  }, [props.existingData]);
+
   // Mutations
   const roomAddMutation = useAddRoom();
+  const roomPatchMutation = usePatchRoom();
 
   const handleNameChange = (newName: string) => {
     if (nameError !== undefined) setNameError(undefined);
@@ -69,6 +79,25 @@ export const RoomAddDialog = (props: RoomAddDialogProps) => {
                 <Box sx={{ width: "100%" }}>
                   <AdminController controller={controller} />
                 </Box>
+                <ControllerDialog
+                  renderButton={(onClick) => (
+                    <IconButton onClick={onClick}>
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  existingData={controller}
+                  editController={(controller: RoomController) =>
+                    setRoom({
+                      ...room,
+                      controllers: room.controllers.map(
+                        (oldController, oldControllerIndex) => {
+                          if (oldControllerIndex === index) return controller;
+                          else return oldController;
+                        }
+                      ),
+                    })
+                  }
+                />
                 <IconButton
                   color="error"
                   onClick={() => {
@@ -84,7 +113,7 @@ export const RoomAddDialog = (props: RoomAddDialogProps) => {
                 </IconButton>
               </Box>
             ))}{" "}
-            <ControllerAddDialog
+            <ControllerDialog
               renderButton={(onClick) => (
                 <Button startIcon={<AddIcon />} onClick={onClick}>
                   Add Controller
@@ -128,14 +157,41 @@ export const RoomAddDialog = (props: RoomAddDialogProps) => {
   const handleClose = () => {
     setOpen(false);
     setActiveStep(0);
-    setRoom({ name: "", controllers: [] });
+    setRoom(
+      props.existingData
+        ? (props.existingData as RoomPost)
+        : { name: "", controllers: [] }
+    );
     setNameError(undefined);
   };
 
   const handleFinish = async () => {
     // Shouldn't be called at all until there are no errors (as finish button
     // will be disabled)
-    roomAddMutation.mutateAsync(room).then(() => handleClose());
+    if (props.existingData === undefined)
+      // Adding
+      roomAddMutation.mutateAsync(room).then(() => handleClose());
+    // Editing
+    else {
+      const nameUpdated =
+        room.name !== props.existingData.name ? room.name : undefined;
+      const controllersUpdated =
+        room.controllers !== props.existingData.controllers
+          ? room.controllers
+          : undefined;
+
+      if (nameUpdated || controllersUpdated)
+        roomPatchMutation
+          .mutateAsync({
+            roomId: props.existingData.id,
+            roomData: {
+              name: nameUpdated ? room.name : undefined,
+              controllers: controllersUpdated ? room.controllers : undefined,
+            },
+          })
+          .then(() => handleClose());
+      else handleClose();
+    }
   };
 
   return (
