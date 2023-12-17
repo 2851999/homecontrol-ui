@@ -19,6 +19,7 @@ import { useState } from "react";
 import { RoomController, RoomPost } from "../../api/schemas/rooms";
 import { AdminController } from "./AdminController";
 import { ControllerAddDialog } from "./ControllerAddDialog";
+import { useAddRoom } from "../../api/rooms";
 
 interface RoomAddDialogProps {
   renderButton: (onClick: () => void) => void;
@@ -36,6 +37,9 @@ export const RoomAddDialog = (props: RoomAddDialogProps) => {
   // Add form state
   const [room, setRoom] = useState<RoomPost>({ name: "", controllers: [] });
   const [nameError, setNameError] = useState<string | undefined>(undefined);
+
+  // Mutations
+  const roomAddMutation = useAddRoom();
 
   const handleNameChange = (newName: string) => {
     if (nameError !== undefined) setNameError(undefined);
@@ -120,14 +124,18 @@ export const RoomAddDialog = (props: RoomAddDialogProps) => {
     if (validateForm()) setActiveStep(activeStep + 1);
   };
 
-  const handleFinish = async () => {};
-
   // Reset everything on close
   const handleClose = () => {
     setOpen(false);
     setActiveStep(0);
     setRoom({ name: "", controllers: [] });
     setNameError(undefined);
+  };
+
+  const handleFinish = async () => {
+    // Shouldn't be called at all until there are no errors (as finish button
+    // will be disabled)
+    roomAddMutation.mutateAsync(room).then(() => handleClose());
   };
 
   return (

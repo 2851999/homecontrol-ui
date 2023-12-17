@@ -78,8 +78,8 @@ export const useRegisterHueBridge = (): UseMutationResult<
   });
 };
 
-const deleteHueBridge = (bridge_id: string): Promise<void> => {
-  return authenticated_api.delete(`/devices/hue/${bridge_id}`);
+const deleteHueBridge = (bridgeId: string): Promise<void> => {
+  return authenticated_api.delete(`/devices/hue/${bridgeId}`);
 };
 
 export const useDeleteHueBridge = (): UseMutationResult<
@@ -90,12 +90,45 @@ export const useDeleteHueBridge = (): UseMutationResult<
 > => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (bridge_id: string) => {
-      return deleteHueBridge(bridge_id);
+    mutationFn: (bridgeId: string) => {
+      return deleteHueBridge(bridgeId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["HueBridges"] });
       queryClient.invalidateQueries({ queryKey: ["HueBridgesDiscovery"] });
     },
+  });
+};
+
+const fetchHueRooms = (bridgeId: string): Promise<HueRoom[]> => {
+  return authenticated_api
+    .get(`/devices/hue/${bridgeId}/rooms`)
+    .then((response) => response.data);
+};
+
+export const useHueRooms = (
+  bridgeId: string,
+  enabled?: boolean
+): UseQueryResult<HueRoom[], AxiosError> => {
+  return useQuery<HueRoom[], AxiosError>({
+    queryKey: ["HueRooms"],
+    queryFn: () => fetchHueRooms(bridgeId),
+    enabled: enabled ?? true,
+  });
+};
+
+const fetchHueRoom = (bridgeId: string, roomId: string): Promise<HueRoom> => {
+  return authenticated_api
+    .get(`/devices/hue/${bridgeId}/rooms/${roomId}`)
+    .then((response) => response.data);
+};
+
+export const useHueRoom = (
+  bridgeId: string,
+  roomId: string
+): UseQueryResult<HueRoom, AxiosError> => {
+  return useQuery<HueRoom, AxiosError>({
+    queryKey: ["HueRoom", roomId],
+    queryFn: () => fetchHueRoom(bridgeId, roomId),
   });
 };

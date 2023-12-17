@@ -68,6 +68,14 @@ function AddDialogue() {
     setData(newData);
   };
 
+  // Reset everything on close
+  const handleClose = () => {
+    setOpen(false);
+    setData({ name: "", ip_address: "" });
+    setFormErrors({ name: "", ip_address: "" });
+    setOtherError(false);
+  };
+
   // Validates then sends request
   const handleAdd = () => {
     // Validate
@@ -85,14 +93,6 @@ function AddDialogue() {
           else setOtherError(true);
         });
     }
-  };
-
-  // Reset everything on close
-  const handleClose = () => {
-    setOpen(false);
-    setData({ name: "", ip_address: "" });
-    setFormErrors({ name: "", ip_address: "" });
-    setOtherError(false);
   };
 
   return (

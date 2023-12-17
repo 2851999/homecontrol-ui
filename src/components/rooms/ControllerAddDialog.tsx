@@ -18,17 +18,23 @@ import {
   Stepper,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { ControlType, RoomController } from "../../api/schemas/rooms";
 import { useACDevices } from "../../api/aircon";
 import { useBroadlinkDevices } from "../../api/broadlink";
-import { useHueBridges } from "../../api/hue";
+import { useHueBridges, useHueRooms } from "../../api/hue";
+import {
+  ControlType,
+  ControllerAC,
+  ControllerBroadlink,
+  ControllerHueRoom,
+  RoomController,
+} from "../../api/schemas/rooms";
 
-interface ControllerSelectStepProps {
-  controller: RoomController;
+interface ControllerSelectStepACProps {
+  controller: ControllerAC;
   onControllerUpdated: (newController: RoomController) => void;
 }
 
-const ControllerSelectStepAC = (props: ControllerSelectStepProps) => {
+const ControllerSelectStepAC = (props: ControllerSelectStepACProps) => {
   // Existing AC devices
   const devicesQuery = useACDevices();
 
@@ -67,7 +73,14 @@ const ControllerSelectStepAC = (props: ControllerSelectStepProps) => {
   );
 };
 
-const ControllerSelectStepBroadlink = (props: ControllerSelectStepProps) => {
+interface ControllerSelectStepBroadlinkProps {
+  controller: ControllerBroadlink;
+  onControllerUpdated: (newController: RoomController) => void;
+}
+
+const ControllerSelectStepBroadlink = (
+  props: ControllerSelectStepBroadlinkProps
+) => {
   // Existing Broadlink devices
   const devicesQuery = useBroadlinkDevices();
 
@@ -106,9 +119,20 @@ const ControllerSelectStepBroadlink = (props: ControllerSelectStepProps) => {
   );
 };
 
-const ControllerSelectStepHueRoom = (props: ControllerSelectStepProps) => {
-  // Existing Hue bridges
+interface ControllerSelectStepHueRoomProps {
+  controller: ControllerHueRoom;
+  onControllerUpdated: (newController: RoomController) => void;
+}
+
+const ControllerSelectStepHueRoom = (
+  props: ControllerSelectStepHueRoomProps
+) => {
+  // Hue bridges and rooms
   const bridgesQuery = useHueBridges();
+  const roomsQuery = useHueRooms(
+    props.controller.bridge_id,
+    props.controller.bridge_id !== ""
+  );
 
   // Auto assign bridge if its the only one
   useEffect(() => {
@@ -116,11 +140,11 @@ const ControllerSelectStepHueRoom = (props: ControllerSelectStepProps) => {
       !bridgesQuery.isLoading &&
       bridgesQuery.data !== undefined &&
       bridgesQuery.data.length === 1 &&
-      props.controller.id === ""
+      props.controller.bridge_id === ""
     ) {
       props.onControllerUpdated({
         ...props.controller,
-        id: bridgesQuery.data[0].id,
+        bridge_id: bridgesQuery.data[0].id,
       });
     }
   }, [bridgesQuery.data, bridgesQuery.isLoading, props]);
@@ -136,30 +160,52 @@ const ControllerSelectStepHueRoom = (props: ControllerSelectStepProps) => {
       <CircularProgress />
     </Box>
   ) : (
-    <FormControl fullWidth>
-      <InputLabel id="device-select-label">Hue Bridge</InputLabel>
-      <Select
-        labelId="type-select-label"
-        id="type-select"
-        label="Hue Bridge"
-        value={props.controller.id}
-        onChange={(event) =>
-          // Should already be guaranteed to be the correct type - only here
-          // to get past type checking
-          props.controller.control_type === ControlType.HUE_ROOM &&
-          props.onControllerUpdated({
-            ...props.controller,
-            id: event.target.value as string,
-          })
-        }
-      >
-        {bridgesQuery.data.map((bridge) => (
-          <MenuItem key={bridge.id} value={bridge.id}>
-            {bridge.name}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <>
+      <FormControl fullWidth>
+        <InputLabel id="device-select-label">Hue Bridge</InputLabel>
+        <Select
+          labelId="device-select-label"
+          id="device-select"
+          label="Hue Bridge"
+          value={props.controller.bridge_id}
+          onChange={(event) =>
+            props.onControllerUpdated({
+              ...props.controller,
+              bridge_id: event.target.value as string,
+            })
+          }
+        >
+          {bridgesQuery.data.map((bridge) => (
+            <MenuItem key={bridge.id} value={bridge.id}>
+              {bridge.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      {!roomsQuery.isLoading && roomsQuery.data !== undefined && (
+        <FormControl fullWidth sx={{ marginTop: 2 }}>
+          <InputLabel id="room-select-label">Hue Room</InputLabel>
+          <Select
+            labelId="room-select-label"
+            id="room-select"
+            label="Hue Room"
+            value={props.controller.id}
+            onChange={(event) =>
+              props.onControllerUpdated({
+                ...props.controller,
+                id: event.target.value as string,
+              })
+            }
+          >
+            {roomsQuery.data.map((room) => (
+              <MenuItem key={room.id} value={room.id}>
+                {room.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      )}
+    </>
   );
 };
 

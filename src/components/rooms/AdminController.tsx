@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { useACDevice } from "../../api/aircon";
 import { useBroadlinkDevice } from "../../api/broadlink";
-import { useHueBridge } from "../../api/hue";
+import { useHueBridge, useHueRoom } from "../../api/hue";
 import {
   ControlType,
   ControllerAC,
@@ -65,17 +65,24 @@ interface AdminControllerHueRoomProps {
 
 const AdminControllerHueRoom = (props: AdminControllerHueRoomProps) => {
   const bridgeQuery = useHueBridge(props.controller.bridge_id);
-  return bridgeQuery.isLoading || bridgeQuery.data === undefined ? (
+  const roomQuery = useHueRoom(props.controller.bridge_id, props.controller.id);
+
+  return bridgeQuery.isLoading ||
+    roomQuery.isLoading ||
+    bridgeQuery.data === undefined ||
+    roomQuery.data === undefined ? (
     <LinearProgress />
   ) : (
     <Accordion elevation={2}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-        Hue Room
+        Hue Room - {roomQuery.data.name}
       </AccordionSummary>
       <AccordionDetails>
         <Typography>ID: {props.controller.id}</Typography>
         <Typography>Bridge ID: {bridgeQuery.data.id}</Typography>
         <Typography>Bridge Name: {bridgeQuery.data.name}</Typography>
+        <Typography>Room ID: {roomQuery.data.id}</Typography>
+        <Typography>Room Name: {roomQuery.data.name}</Typography>
       </AccordionDetails>
     </Accordion>
   );
