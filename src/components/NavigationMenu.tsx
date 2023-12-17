@@ -5,6 +5,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import {
   Box,
   Collapse,
+  Divider,
   IconButton,
   List,
   ListItem,
@@ -25,6 +26,9 @@ interface Route {
   // Nested routes
   routes?: Route[];
 }
+
+/* Standard routes all users have access to */
+const STANDARD_ROUTES: Route[] = [{ text: "Home", path: "/" }];
 
 /* Specific admin routes to have navigation for */
 const ADMIN_ROUTES: Route[] = [
@@ -149,7 +153,32 @@ export const NavigationMenu = () => {
           marginTop={7}
           role="presentation"
         >
+          <List disablePadding>
+            {STANDARD_ROUTES.map((route: Route) => {
+              if (route.path)
+                return (
+                  <NavigationButton
+                    key={route.path}
+                    text={route.text}
+                    path={route.path}
+                    offset={2}
+                    onNavigate={() => setDrawerOpen(false)}
+                  />
+                );
+              else if (route.routes)
+                return (
+                  <NavigationSection
+                    key={`${route.text}-section`}
+                    text={route.text}
+                    routes={route.routes}
+                    offset={2}
+                    onNavigate={() => setDrawerOpen(false)}
+                  />
+                );
+            })}
+          </List>
           <AuthenticatedComponent adminOnly>
+            <Divider sx={{ my: 2 }} />
             <Typography variant="h5" px={2}>
               Admin
             </Typography>

@@ -1,8 +1,8 @@
 "use client";
+
 import axios, { AxiosResponse } from "axios";
 import { postLogin, postLogout } from "./api/auth";
 import { LoginPost, User, UserSession } from "./api/schemas/auth";
-import { AnyARecord } from "dns";
 
 export const getAccessToken = (): string | null => {
   return localStorage.getItem("access_token");

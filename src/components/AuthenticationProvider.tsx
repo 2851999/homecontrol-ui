@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchUser } from "../api/auth";
-import { isLoggedIn } from "../authentication";
 import { User } from "../api/schemas/auth";
-import React from "react";
+import { isLoggedIn } from "../authentication";
 
 export const AuthenticationContext = React.createContext<
   [

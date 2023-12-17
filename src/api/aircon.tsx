@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
-import { ACDevice, ACDevicePost } from "./schemas/aircon";
+import { ACDevice, ACDevicePost, ACDeviceState } from "./schemas/aircon";
 
 const fetchACDevices = (): Promise<ACDevice[]> => {
   return authenticated_api
@@ -76,5 +76,20 @@ export const useDeleteACDevice = (): UseMutationResult<
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["ACDevices"] });
     },
+  });
+};
+
+const fetchACDeviceState = (deviceId: string): Promise<ACDeviceState> => {
+  return authenticated_api
+    .get(`/devices/aircon/${deviceId}/state`)
+    .then((response) => response.data);
+};
+
+export const useACDeviceState = (
+  deviceId: string
+): UseQueryResult<ACDeviceState, AxiosError> => {
+  return useQuery<ACDeviceState, AxiosError>({
+    queryKey: ["ACDeviceState", deviceId],
+    queryFn: () => fetchACDeviceState(deviceId),
   });
 };
