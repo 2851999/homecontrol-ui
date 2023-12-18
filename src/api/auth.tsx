@@ -66,7 +66,10 @@ authenticated_api.interceptors.request.use(
 
 // See https://gist.github.com/mkjiau/650013a99c341c9f23ca00ccb213db1c
 let isFetchingAccessToken = false;
-let accessTokenSubscribers: ((accessToken: string) => any)[] = [];
+let accessTokenSubscribers: ((
+  accessToken: string,
+  error?: AxiosError
+) => any)[] = [];
 
 /**
  * Intercept on the response to handle token expiry and refresh
@@ -108,6 +111,9 @@ authenticated_api.interceptors.response.use(
           if (isAxiosError(error) && error.response?.status == 401) {
             // Refresh token expired so remove session and go back to login
             removeUserSession();
+            accessTokenSubscribers.filter((callback) =>
+              callback("", error as AxiosError)
+            );
             window.location.href = "/login";
           }
           return Promise.reject(error);
@@ -116,10 +122,15 @@ authenticated_api.interceptors.response.use(
         // Require refresh but another request is already performing - add to a
         // list to be resolved later once the new token is obtained
         return new Promise((resolve) => {
-          accessTokenSubscribers.push((accessToken: string) => {
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            resolve(axios(originalRequest));
-          });
+          accessTokenSubscribers.push(
+            (accessToken: string, error?: AxiosError) => {
+              if (error !== undefined) resolve(Promise.reject(error));
+              else {
+                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                resolve(axios(originalRequest));
+              }
+            }
+          );
         });
       }
     } else return Promise.reject(error);
