@@ -32,7 +32,7 @@ export enum ACDeviceSwingMode {
   BOTH = 0xf,
 }
 
-export interface ACDeviceState {
+export interface ACDeviceStateBase {
   // Read and write
   power: boolean;
   target_temperature: number;
@@ -42,9 +42,18 @@ export interface ACDeviceState {
   eco_mode: boolean;
   turbo_mode: boolean;
   fahrenheit: boolean;
+}
 
+export interface ACDeviceState extends ACDeviceStateBase {
   // Read only
   indoor_temperature: number;
   outdoor_temperature: number;
   display_on: boolean;
 }
+
+export interface ACDeviceStatePut extends ACDeviceStateBase {
+  // Write only
+  prompt_tone: boolean;
+}
+
+export interface ACDeviceStatePatch extends Partial<ACDeviceStatePut> {}

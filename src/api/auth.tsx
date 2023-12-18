@@ -141,9 +141,8 @@ export const useEditUser = (): UseMutationResult<
   any
 > => {
   return useMutation({
-    mutationFn: (data: { userId: string; userData: UserPatch }) => {
-      return patchUser(data.userId, data.userData);
-    },
+    mutationFn: (data: { userId: string; userData: UserPatch }) =>
+      patchUser(data.userId, data.userData),
   });
 };
 
