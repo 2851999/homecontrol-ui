@@ -64,6 +64,10 @@ authenticated_api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// See https://gist.github.com/mkjiau/650013a99c341c9f23ca00ccb213db1c
+let isFetchingAccessToken = false;
+let accessTokenSubscribers: ((accessToken: string) => any)[] = [];
+
 /**
  * Intercept on the response to handle token expiry and refresh
  */
@@ -74,29 +78,49 @@ authenticated_api.interceptors.response.use(
     const originalRequest = error.config;
 
     // Check if an authentication error (prevent any more than one refresh)
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    if (error.response.status === 401 || !originalRequest._retry) {
+      // Prevent other requests from also attempting to refresh while waiting
+      // for the refresh token response
+      if (!isFetchingAccessToken) {
+        isFetchingAccessToken = true;
 
-      try {
-        // Attempt to refresh the user session
-        const refreshToken = getRefreshToken();
-        const response: UserSession = await axios
-          .post(`${BASE_URL}/auth/refresh`, { refresh_token: refreshToken })
-          .then((response) => response.data);
+        originalRequest._retry = true;
 
-        setUserSession(response);
-        originalRequest.headers.Authorization = `Bearer ${response.access_token}`;
+        try {
+          // Attempt to refresh the user session
+          const refreshToken = getRefreshToken();
+          const response: UserSession = await axios
+            .post(`${BASE_URL}/auth/refresh`, { refresh_token: refreshToken })
+            .then((response) => response.data);
 
-        // Retry
-        return axios(originalRequest);
-      } catch (error) {
-        // Error while refreshing, check if its also a token expiry
-        if (isAxiosError(error) && error.response?.status == 401) {
-          // Refresh token expired so remove session and go back to login
-          removeUserSession();
-          window.location.href = "/login";
+          setUserSession(response);
+
+          // Re-run any saved requests with the new token
+          isFetchingAccessToken = false;
+          accessTokenSubscribers.filter((callback) =>
+            callback(response.access_token)
+          );
+
+          // Retry
+          return axios(originalRequest);
+        } catch (error) {
+          // Error while refreshing, check if its also a token expiry
+          if (isAxiosError(error) && error.response?.status == 401) {
+            // Refresh token expired so remove session and go back to login
+            removeUserSession();
+            window.location.href = "/login";
+          }
+          return Promise.reject(error);
         }
-        return Promise.reject(error);
+      } else {
+        // Require refresh but another request is already performing - add to a
+        // list to be resolved later once the new token is obtained
+        return new Promise((resolve) => {
+          accessTokenSubscribers.push((accessToken: string) => {
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+            resolve(axios(originalRequest));
+          });
+        });
       }
     } else return Promise.reject(error);
   }
