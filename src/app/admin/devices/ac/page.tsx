@@ -3,9 +3,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
-  Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -29,6 +27,7 @@ import {
   useDeleteACDevice,
 } from "../../../../api/aircon";
 import { ACDevice, ACDevicePost } from "../../../../api/schemas/aircon";
+import { CircularLoadingIndicator } from "../../../../components/CircularLoadingIndicator";
 import { LoadingPage } from "../../../../components/LoadingPage";
 
 function AddDialogue() {
@@ -104,15 +103,7 @@ function AddDialogue() {
         <DialogTitle>Add device</DialogTitle>
         {deviceAddMutation.isPending ? (
           <DialogContent>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <CircularProgress />
-            </Box>
+            <CircularLoadingIndicator />
           </DialogContent>
         ) : (
           <>

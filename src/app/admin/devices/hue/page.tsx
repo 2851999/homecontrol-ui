@@ -5,7 +5,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -31,6 +30,7 @@ import {
   useHueBridges,
   useRegisterHueBridge,
 } from "../../../../api/hue";
+import { CircularLoadingIndicator } from "../../../../components/CircularLoadingIndicator";
 import { LoadingPage } from "../../../../components/LoadingPage";
 
 function DiscoveryStep(props: {
@@ -87,15 +87,7 @@ function DiscoveryStep(props: {
       </FormHelperText>
     </Box>
   ) : discoverBridgesQuery.isLoading || rows === undefined ? (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress />
-    </Box>
+    <CircularLoadingIndicator />
   ) : (
     <DataGrid
       rows={rows}
@@ -183,15 +175,7 @@ function AddDialogue(props: { currentBridges: HueBridge[] }) {
                   }
                 </Typography>
               </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <CircularProgress size={40} />
-              </Box>
+              <CircularLoadingIndicator />
             </>
           )
         );

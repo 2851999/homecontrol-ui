@@ -3,7 +3,6 @@
 import {
   Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -28,6 +27,7 @@ import {
   ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
+import { CircularLoadingIndicator } from "../CircularLoadingIndicator";
 
 interface ControllerSelectStepACProps {
   controller: ControllerAC;
@@ -39,15 +39,7 @@ const ControllerSelectStepAC = (props: ControllerSelectStepACProps) => {
   const devicesQuery = useACDevices();
 
   return devicesQuery.isLoading || devicesQuery.data === undefined ? (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress />
-    </Box>
+    <CircularLoadingIndicator />
   ) : (
     <FormControl fullWidth>
       <InputLabel id="device-select-label">AC Device</InputLabel>
@@ -85,15 +77,7 @@ const ControllerSelectStepBroadlink = (
   const devicesQuery = useBroadlinkDevices();
 
   return devicesQuery.isLoading || devicesQuery.data === undefined ? (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress />
-    </Box>
+    <CircularLoadingIndicator />
   ) : (
     <FormControl fullWidth>
       <InputLabel id="device-select-label">Broadlink Device</InputLabel>
@@ -150,15 +134,7 @@ const ControllerSelectStepHueRoom = (
   }, [bridgesQuery.data, bridgesQuery.isLoading, props]);
 
   return bridgesQuery.isLoading || bridgesQuery.data === undefined ? (
-    <Box
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <CircularProgress />
-    </Box>
+    <CircularLoadingIndicator />
   ) : (
     <>
       <FormControl fullWidth>

@@ -5,6 +5,7 @@ import DryIcon from "@mui/icons-material/Dry";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import EnergySavingsLeafIcon from "@mui/icons-material/EnergySavingsLeaf";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import {
   Accordion,
@@ -28,14 +29,12 @@ import {
   ACDeviceMode,
   ACDeviceStateBase,
   ACDeviceStatePatch,
-  ACDeviceStatePut,
 } from "../../api/schemas/aircon";
 import {
   ControlType,
   ControllerAC,
   RoomController,
 } from "../../api/schemas/rooms";
-import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 
 type TooltipToggleButtonProps = ToggleButtonProps & {
   TooltipProps: Omit<TooltipProps, "children">;
@@ -224,14 +223,18 @@ const ControllerAC = (props: ControllerACProps) => {
             </ToggleButtonGroup>
           </Grid>
           <Grid item>
-            <IconButton
-              color={deviceStateQuery.data.power ? "success" : "error"}
-              onClick={() =>
-                handleStateChange({ power: !deviceStateQuery.data.power })
-              }
+            <Tooltip
+              title={`Power ${deviceStateQuery.data.power ? "off" : "on"}`}
             >
-              <PowerSettingsNewIcon />
-            </IconButton>
+              <IconButton
+                color={deviceStateQuery.data.power ? "success" : "error"}
+                onClick={() =>
+                  handleStateChange({ power: !deviceStateQuery.data.power })
+                }
+              >
+                <PowerSettingsNewIcon />
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
       </AccordionDetails>

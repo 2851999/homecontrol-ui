@@ -3,9 +3,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
-  Box,
   Button,
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -32,6 +30,7 @@ import {
   BroadlinkDevice,
   BroadlinkDevicePost,
 } from "../../../../api/schemas/broadlink";
+import { CircularLoadingIndicator } from "../../../../components/CircularLoadingIndicator";
 import { LoadingPage } from "../../../../components/LoadingPage";
 
 // TODO: Unify this dialog and the one for AC as identical (apart from types)
@@ -112,15 +111,7 @@ function AddDialogue() {
         <DialogTitle>Add device</DialogTitle>
         {deviceAddMutation.isPending ? (
           <DialogContent>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <CircularProgress />
-            </Box>
+            <CircularLoadingIndicator />
           </DialogContent>
         ) : (
           <>
