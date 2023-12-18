@@ -2,6 +2,7 @@
 
 import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Box,
   Button,
@@ -16,11 +17,10 @@ import {
   TextField,
 } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Room, RoomController, RoomPost } from "../../api/schemas/rooms";
-import { AdminController } from "./AdminController";
-import { ControllerDialog } from "./ControllerDialog";
 import { useAddRoom, usePatchRoom } from "../../api/rooms";
-import EditIcon from "@mui/icons-material/Edit";
+import { Room, RoomController, RoomPost } from "../../api/schemas/rooms";
+import { AdminControllerAccordion } from "./AdminControllerAccordion";
+import { ControllerDialog } from "./ControllerDialog";
 
 interface RoomDialogProps {
   renderButton: (onClick: () => void) => void;
@@ -77,7 +77,7 @@ export const RoomDialog = (props: RoomDialogProps) => {
             {room.controllers.map((controller, index) => (
               <Box key={index} sx={{ display: "flex" }}>
                 <Box sx={{ width: "100%" }}>
-                  <AdminController controller={controller} />
+                  <AdminControllerAccordion controller={controller} />
                 </Box>
                 <ControllerDialog
                   renderButton={(onClick) => (

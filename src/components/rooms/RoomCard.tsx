@@ -2,8 +2,8 @@
 
 import { Card, CardContent, Typography } from "@mui/material";
 import { Room } from "../../api/schemas/rooms";
-import { Controller } from "./Controller";
 import { useRoomTemperature } from "../../api/temperature";
+import { ControllerAccordion } from "./ControllerAccordion";
 
 export interface RoomCardProps {
   room: Room;
@@ -27,7 +27,7 @@ export const RoomCard = (props: RoomCardProps) => {
           )}
 
         {props.room.controllers.map((controller, index) => (
-          <Controller key={index} controller={controller} />
+          <ControllerAccordion key={index} controller={controller} />
         ))}
       </CardContent>
     </Card>

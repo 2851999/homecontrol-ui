@@ -53,11 +53,11 @@ const TooltipToggleButton: React.FC<TooltipToggleButtonProps> = forwardRef(
 
 export default TooltipToggleButton;
 
-interface ControllerACProps {
+interface ControllerAccordionACProps {
   controller: ControllerAC;
 }
 
-const ControllerAC = (props: ControllerACProps) => {
+const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
   // Current device state
   const deviceStateQuery = useACDeviceState(props.controller.id);
 
@@ -242,17 +242,17 @@ const ControllerAC = (props: ControllerACProps) => {
   );
 };
 
-export interface ControllerProps {
+export interface ControllerAccordionProps {
   controller: RoomController;
 }
 
-export const Controller = (props: ControllerProps) => {
+export const ControllerAccordion = (props: ControllerAccordionProps) => {
   const { controller } = props;
 
   switch (controller.control_type) {
     case ControlType.AC:
       return (
-        <ControllerAC
+        <ControllerAccordionAC
           key={`${controller.control_type}-${controller.id}`}
           controller={controller}
         />

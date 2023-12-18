@@ -17,11 +17,11 @@ import {
   RoomController,
 } from "../../api/schemas/rooms";
 
-interface AdminControllerACProps {
+interface AdminControllerAccordionACProps {
   controller: ControllerAC;
 }
 
-const AdminControllerAC = (props: AdminControllerACProps) => {
+const AdminControllerAccordionAC = (props: AdminControllerAccordionACProps) => {
   const deviceQuery = useACDevice(props.controller.id);
   return deviceQuery.isLoading || deviceQuery.data === undefined ? (
     <LinearProgress />
@@ -38,11 +38,13 @@ const AdminControllerAC = (props: AdminControllerACProps) => {
   );
 };
 
-interface AdminControllerBroadlinkProps {
+interface AdminControllerAccordionBroadlinkProps {
   controller: ControllerBroadlink;
 }
 
-const AdminControllerBroadlink = (props: AdminControllerBroadlinkProps) => {
+const AdminControllerAccordionBroadlink = (
+  props: AdminControllerAccordionBroadlinkProps
+) => {
   const deviceQuery = useBroadlinkDevice(props.controller.id);
   return deviceQuery.isLoading || deviceQuery.data === undefined ? (
     <LinearProgress />
@@ -59,11 +61,13 @@ const AdminControllerBroadlink = (props: AdminControllerBroadlinkProps) => {
   );
 };
 
-interface AdminControllerHueRoomProps {
+interface AdminControllerAccordionHueRoomProps {
   controller: ControllerHueRoom;
 }
 
-const AdminControllerHueRoom = (props: AdminControllerHueRoomProps) => {
+const AdminControllerAccordionHueRoom = (
+  props: AdminControllerAccordionHueRoomProps
+) => {
   const bridgeQuery = useHueBridge(props.controller.bridge_id);
   const roomQuery = useHueRoom(props.controller.bridge_id, props.controller.id);
 
@@ -88,31 +92,33 @@ const AdminControllerHueRoom = (props: AdminControllerHueRoomProps) => {
   );
 };
 
-export interface AdminControllerProps {
+export interface AdminControllerAccordionProps {
   controller: RoomController;
 }
 
-export const AdminController = (props: AdminControllerProps) => {
+export const AdminControllerAccordion = (
+  props: AdminControllerAccordionProps
+) => {
   const { controller } = props;
 
   switch (controller.control_type) {
     case ControlType.AC:
       return (
-        <AdminControllerAC
+        <AdminControllerAccordionAC
           key={`${controller.control_type}-${controller.id}`}
           controller={controller}
         />
       );
     case ControlType.BROADLINK:
       return (
-        <AdminControllerBroadlink
+        <AdminControllerAccordionBroadlink
           key={`${controller.control_type}-${controller.id}`}
           controller={controller}
         />
       );
     case ControlType.HUE_ROOM:
       return (
-        <AdminControllerHueRoom
+        <AdminControllerAccordionHueRoom
           key={`${controller.control_type}-${controller.id}-${controller.bridge_id}`}
           controller={controller}
         />
