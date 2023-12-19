@@ -17,7 +17,6 @@ interface HueBridge {
 }
 
 interface HueRoomLight {
-  id: string;
   name: string;
 }
 
@@ -25,5 +24,5 @@ interface HueRoom {
   id: string;
   name: string;
   grouped_light_id: string;
-  lights: HueRoomLight[];
+  lights: { [key: string]: HueRoomLight[] };
 }
