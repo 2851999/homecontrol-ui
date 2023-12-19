@@ -11,16 +11,21 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  FormControlLabel,
+  FormGroup,
   Grid,
   IconButton,
   LinearProgress,
   Slider,
+  Switch,
   ToggleButton,
   ToggleButtonGroup,
   ToggleButtonProps,
   Tooltip,
   TooltipProps,
   Typography,
+  useTheme,
 } from "@mui/material";
 import React, { forwardRef } from "react";
 import { useACDeviceState, useEditACDeviceState } from "../../api/aircon";
@@ -33,8 +38,10 @@ import {
 import {
   ControlType,
   ControllerAC,
+  ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
+import { useHueRoomState } from "../../api/hue";
 
 type TooltipToggleButtonProps = ToggleButtonProps & {
   TooltipProps: Omit<TooltipProps, "children">;
@@ -242,6 +249,71 @@ const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
   );
 };
 
+interface ControllerAccordionHueRoomProps {
+  controller: ControllerHueRoom;
+}
+
+const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
+  // Current room state
+  const roomStateQuery = useHueRoomState(
+    props.controller.bridge_id,
+    props.controller.id
+  );
+
+  const backgroundColor = roomStateQuery.data?.grouped_light.on
+    ? "success.main"
+    : undefined;
+  const textColour = roomStateQuery.data?.grouped_light.on
+    ? "success.contrastText"
+    : "text.primary";
+
+  const theme = useTheme();
+
+  return roomStateQuery.isLoading || roomStateQuery.data === undefined ? (
+    <LinearProgress />
+  ) : (
+    <Accordion elevation={2}>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon sx={{ color: textColour }} />}
+        sx={{
+          backgroundColor: backgroundColor,
+        }}
+      >
+        <Typography color={textColour}>Lighting</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <FormGroup>
+          {Object.keys(roomStateQuery.data.lights).map((key) => {
+            const light = roomStateQuery.data.lights[key];
+            const lightColour =
+              light.colour !== null
+                ? `rgb(${light.colour.r * 255}, ${light.colour.g * 255}, ${
+                    light.colour.b * 255
+                  })`
+                : "rgb(255, 206.27926686508354, 118.91753298906583)";
+            const lightThemeColour = theme.palette.augmentColor({
+              color: { main: lightColour },
+            });
+            return (
+              <FormControlLabel
+                key={key}
+                label={light.name}
+                control={<Switch checked={light.on} />}
+                sx={{
+                  backgroundColor: light.on
+                    ? lightThemeColour?.main
+                    : undefined,
+                  color: light.on ? lightThemeColour?.contrastText : undefined,
+                }}
+              />
+            );
+          })}
+        </FormGroup>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
 export interface ControllerAccordionProps {
   controller: RoomController;
 }
@@ -260,6 +332,11 @@ export const ControllerAccordion = (props: ControllerAccordionProps) => {
     case ControlType.BROADLINK:
       return null;
     case ControlType.HUE_ROOM:
-      return null;
+      return (
+        <ControllerAccordionHueRoom
+          key={`${controller.control_type}-${controller.bridge_id}-${controller.id}`}
+          controller={controller}
+        />
+      );
   }
 };

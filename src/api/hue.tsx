@@ -128,7 +128,26 @@ export const useHueRoom = (
   roomId: string
 ): UseQueryResult<HueRoom, AxiosError> => {
   return useQuery<HueRoom, AxiosError>({
-    queryKey: ["HueRoom", roomId],
+    queryKey: ["HueRoom", bridgeId, roomId],
     queryFn: () => fetchHueRoom(bridgeId, roomId),
+  });
+};
+
+const fetchHueRoomState = (
+  bridgeId: string,
+  roomId: string
+): Promise<HueRoomState> => {
+  return authenticated_api
+    .get(`/devices/hue/${bridgeId}/rooms/${roomId}/state`)
+    .then((response) => response.data);
+};
+
+export const useHueRoomState = (
+  bridgeId: string,
+  roomId: string
+): UseQueryResult<HueRoomState, AxiosError> => {
+  return useQuery<HueRoomState, AxiosError>({
+    queryKey: ["HueRoomState", bridgeId, roomId],
+    queryFn: () => fetchHueRoomState(bridgeId, roomId),
   });
 };
