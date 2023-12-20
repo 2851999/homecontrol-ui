@@ -11,6 +11,8 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  Divider,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -26,7 +28,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect, useState } from "react";
 import { useACDeviceState, useEditACDeviceState } from "../../api/aircon";
 import { useEditRoomState, useHueRoomState } from "../../api/hue";
 import {
@@ -274,6 +276,13 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
 
   const theme = useTheme();
 
+  const [sliderValue, setSliderValue] = useState<number | null>(null);
+  useEffect(() => {
+    if (!roomStateQuery.isLoading && roomStateQuery.data !== undefined) {
+      setSliderValue(roomStateQuery.data.grouped_light.brightness);
+    }
+  }, [roomStateQuery.data, roomStateQuery.isLoading]);
+
   const handleStateChange = (patchData: HueRoomStatePatch) => {
     roomStateMutation.mutate(patchData);
   };
@@ -291,6 +300,48 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
         <Typography color={textColour}>Lighting</Typography>
       </AccordionSummary>
       <AccordionDetails>
+        {roomStateQuery.data.grouped_light.on !== null && (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography>Power: </Typography>
+            <Switch
+              sx={{ marginLeft: "auto" }}
+              checked={roomStateQuery.data.grouped_light.on}
+              onClick={(event) => event.stopPropagation()}
+              onChange={(event) => {
+                handleStateChange({
+                  grouped_light: { on: event.target.checked },
+                });
+              }}
+            />
+          </Box>
+        )}
+        {sliderValue !== null && (
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Typography>Brightness:</Typography>
+            <Slider
+              min={0}
+              max={100}
+              step={1}
+              valueLabelDisplay="auto"
+              value={Math.round(sliderValue)}
+              sx={{ marginLeft: 2 }}
+              onChange={(event, value) =>
+                setSliderValue(Array.isArray(value) ? value[0] : value)
+              }
+              componentsProps={{
+                track: { onClick: (event) => event.preventDefault() },
+              }}
+              onChangeCommitted={(event, value) => {
+                handleStateChange({
+                  grouped_light: {
+                    brightness: Array.isArray(value) ? value[0] : value,
+                  },
+                });
+              }}
+            />
+          </Box>
+        )}
+        <Divider sx={{ my: 1 }} />
         <FormGroup>
           {Object.keys(roomStateQuery.data.lights).map((lightId) => {
             const light = roomStateQuery.data.lights[lightId];
