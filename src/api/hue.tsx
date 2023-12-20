@@ -151,3 +151,28 @@ export const useHueRoomState = (
     queryFn: () => fetchHueRoomState(bridgeId, roomId),
   });
 };
+
+const patchHueRoomState = (
+  bridgeId: string,
+  roomId: string,
+  stateData: HueRoomStatePatch
+): Promise<HueRoomState> => {
+  return authenticated_api
+    .patch(`/devices/hue/${bridgeId}/rooms/${roomId}/state`, stateData)
+    .then((response) => response.data);
+};
+
+export const useEditRoomState = (
+  bridgeId: string,
+  roomId: string
+): UseMutationResult<HueRoomState, AxiosError, HueRoomStatePatch, any> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (stateData: HueRoomStatePatch) =>
+      patchHueRoomState(bridgeId, roomId, stateData),
+    onSuccess: (data: HueRoomState) => {
+      queryClient.setQueryData(["HueRoomState", bridgeId, roomId], data);
+    },
+  });
+};

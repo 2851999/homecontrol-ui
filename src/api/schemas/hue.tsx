@@ -51,3 +51,22 @@ interface HueRoomState {
   grouped_light: HueRoomGroupedLightState;
   lights: { [key: string]: HueRoomLightState };
 }
+
+interface HueRoomGroupedLightStatePatch {
+  on?: boolean;
+  brightness?: number;
+}
+
+interface HueRoomLightStatePatch {
+  name?: string;
+  on?: boolean;
+
+  brightness?: number;
+  colour_temperature?: number;
+  colour?: HueColour;
+}
+
+interface HueRoomStatePatch {
+  grouped_light?: HueRoomGroupedLightStatePatch;
+  lights?: { [key: string]: HueRoomLightStatePatch };
+}

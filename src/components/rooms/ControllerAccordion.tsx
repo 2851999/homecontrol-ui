@@ -11,7 +11,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
   FormControlLabel,
   FormGroup,
   Grid,
@@ -29,6 +28,7 @@ import {
 } from "@mui/material";
 import React, { forwardRef } from "react";
 import { useACDeviceState, useEditACDeviceState } from "../../api/aircon";
+import { useEditRoomState, useHueRoomState } from "../../api/hue";
 import {
   ACDeviceFanSpeed,
   ACDeviceMode,
@@ -41,7 +41,6 @@ import {
   ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
-import { useHueRoomState } from "../../api/hue";
 
 type TooltipToggleButtonProps = ToggleButtonProps & {
   TooltipProps: Omit<TooltipProps, "children">;
@@ -260,6 +259,12 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
     props.controller.id
   );
 
+  // Mutations
+  const roomStateMutation = useEditRoomState(
+    props.controller.bridge_id,
+    props.controller.id
+  );
+
   const backgroundColor = roomStateQuery.data?.grouped_light.on
     ? "success.main"
     : undefined;
@@ -268,6 +273,10 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
     : "text.primary";
 
   const theme = useTheme();
+
+  const handleStateChange = (patchData: HueRoomStatePatch) => {
+    roomStateMutation.mutate(patchData);
+  };
 
   return roomStateQuery.isLoading || roomStateQuery.data === undefined ? (
     <LinearProgress />
@@ -283,8 +292,8 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
       </AccordionSummary>
       <AccordionDetails>
         <FormGroup>
-          {Object.keys(roomStateQuery.data.lights).map((key) => {
-            const light = roomStateQuery.data.lights[key];
+          {Object.keys(roomStateQuery.data.lights).map((lightId) => {
+            const light = roomStateQuery.data.lights[lightId];
             const lightColour =
               light.colour !== null
                 ? `rgb(${light.colour.r * 255}, ${light.colour.g * 255}, ${
@@ -296,9 +305,18 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
             });
             return (
               <FormControlLabel
-                key={key}
+                key={lightId}
                 label={light.name}
-                control={<Switch checked={light.on} />}
+                control={
+                  <Switch
+                    checked={light.on}
+                    onChange={(event) => {
+                      handleStateChange({
+                        lights: { [lightId]: { on: event.target.checked } },
+                      });
+                    }}
+                  />
+                }
                 sx={{
                   backgroundColor: light.on
                     ? lightThemeColour?.main
