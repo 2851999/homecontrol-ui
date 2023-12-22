@@ -2,9 +2,8 @@ version: "3.8"
 
 services:
   ui:
-    build: .
+    build:
+      dockerfile: ./Dockerfile.prod
     working_dir: /homecontrol-ui
-    volumes:
-      - ./:/homecontrol-ui
     ports:
       - "3000:3000"

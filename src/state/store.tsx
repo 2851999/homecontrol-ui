@@ -1,10 +1,5 @@
-import {
-  PreloadedState,
-  StateFromReducersMapObject,
-  configureStore,
-} from "@reduxjs/toolkit";
+import { StateFromReducersMapObject, configureStore } from "@reduxjs/toolkit";
 import { useEffect, useState } from "react";
-import { ThemeMode } from "../theme/theme";
 import { settingsSlice } from "./settingsSlice";
 
 // All reducers
@@ -18,7 +13,7 @@ export type RootState = StateFromReducersMapObject<typeof reducer>;
  *
  * @param preloadedState - State to initialise the store with
  */
-const makeStore = (preloadedState?: PreloadedState<RootState>) =>
+const makeStore = (preloadedState?: RootState) =>
   configureStore({
     reducer: reducer,
     preloadedState: preloadedState,
@@ -33,9 +28,7 @@ export type AppDispatch = Store["dispatch"];
  *
  * @returns A pre loaded state or undefined
  */
-export const loadFromLocalStorage = ():
-  | PreloadedState<RootState>
-  | undefined => {
+export const loadFromLocalStorage = (): RootState | undefined => {
   const serialisedState = localStorage.getItem("settings");
   if (serialisedState !== null) {
     return { settings: JSON.parse(serialisedState) };
