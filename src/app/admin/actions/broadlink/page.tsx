@@ -37,14 +37,14 @@ import {
 } from "../../../../api/broadlink";
 import {
   BroadlinkAction,
-  BroadlinkActionPost,
+  BroadlinkDeviceRecordPost,
 } from "../../../../api/schemas/broadlink";
 import { CircularLoadingIndicator } from "../../../../components/CircularLoadingIndicator";
 import { LoadingPage } from "../../../../components/LoadingPage";
 
 function NameStep(props: {
-  data: BroadlinkActionPost;
-  formErrors: BroadlinkActionPost;
+  data: BroadlinkDeviceRecordPost;
+  formErrors: BroadlinkDeviceRecordPost;
   onChangeName: (name: string) => void;
 }) {
   return (
@@ -65,9 +65,9 @@ function NameStep(props: {
 
 function SelectStep(props: {
   deviceId: string | undefined;
-  data: BroadlinkActionPost;
+  data: BroadlinkDeviceRecordPost;
   deviceIdError: string | undefined;
-  formErrors: BroadlinkActionPost;
+  formErrors: BroadlinkDeviceRecordPost;
   onSelectDevice: (deviceId: string) => void;
 }) {
   // Existing devices
@@ -101,7 +101,7 @@ function SelectStep(props: {
 
 function RecordStep(props: {
   deviceId: string;
-  data: BroadlinkActionPost;
+  data: BroadlinkDeviceRecordPost;
   onClose: () => void;
   onOtherError: () => void;
 }) {
@@ -153,13 +153,13 @@ function AddDialogue() {
   // Dialog state
   const [open, setOpen] = useState<boolean>(false);
   const [deviceId, setDeviceId] = useState<string | undefined>(undefined);
-  const [data, setData] = useState<BroadlinkActionPost>({
+  const [data, setData] = useState<BroadlinkDeviceRecordPost>({
     name: "",
   });
   const [deviceIdError, setDeviceIdError] = useState<string | undefined>(
     undefined
   );
-  const [formErrors, setFormErrors] = useState<BroadlinkActionPost>({
+  const [formErrors, setFormErrors] = useState<BroadlinkDeviceRecordPost>({
     name: "",
   });
   const [otherError, setOtherError] = useState<boolean>(false);
@@ -194,7 +194,7 @@ function AddDialogue() {
   // Resets appropriate form errors when a field is changed
   const handleFormChange = (
     newDeviceId: string | undefined,
-    newData: BroadlinkActionPost
+    newData: BroadlinkDeviceRecordPost
   ) => {
     if (newData.name != data.name && !!formErrors.name)
       setFormErrors({ ...formErrors, name: "" });

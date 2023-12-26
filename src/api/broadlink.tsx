@@ -10,7 +10,7 @@ import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
 import {
   BroadlinkAction,
-  BroadlinkActionPost,
+  BroadlinkDeviceRecordPost,
   BroadlinkDevice,
   BroadlinkDevicePlaybackPost,
   BroadlinkDevicePost,
@@ -158,7 +158,7 @@ export const useDeleteBroadlinkAction = (): UseMutationResult<
 
 const recordBroadlinkAction = (
   deviceId: string,
-  action: BroadlinkActionPost
+  action: BroadlinkDeviceRecordPost
 ): Promise<BroadlinkAction> => {
   return authenticated_api
     .post(`/devices/broadlink/${deviceId}/record`, action)
@@ -168,14 +168,14 @@ const recordBroadlinkAction = (
 export const useRecordBroadlinkAction = (): UseMutationResult<
   BroadlinkAction,
   AxiosError,
-  { deviceId: string; actionData: BroadlinkActionPost },
+  { deviceId: string; actionData: BroadlinkDeviceRecordPost },
   any
 > => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (data: {
       deviceId: string;
-      actionData: BroadlinkActionPost;
+      actionData: BroadlinkDeviceRecordPost;
     }) => {
       return recordBroadlinkAction(data.deviceId, data.actionData);
     },
