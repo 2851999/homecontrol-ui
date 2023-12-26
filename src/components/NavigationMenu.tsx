@@ -41,6 +41,10 @@ const ADMIN_ROUTES: Route[] = [
       { text: "Broadlink", path: "/admin/devices/broadlink" },
     ],
   },
+  {
+    text: "Actions",
+    routes: [{ text: "Broadlink", path: "/admin/actions/broadlink" }],
+  },
   { text: "Rooms", path: "/admin/rooms" },
 ];
 

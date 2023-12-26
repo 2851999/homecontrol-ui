@@ -7,7 +7,12 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
-import { BroadlinkDevice, BroadlinkDevicePost } from "./schemas/broadlink";
+import {
+  BroadlinkAction,
+  BroadlinkActionPost,
+  BroadlinkDevice,
+  BroadlinkDevicePost,
+} from "./schemas/broadlink";
 
 const fetchBroadlinkDevices = (): Promise<BroadlinkDevice[]> => {
   return authenticated_api
@@ -82,6 +87,68 @@ export const useDeleteBroadlinkDevice = (): UseMutationResult<
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["BroadlinkDevices"] });
+    },
+  });
+};
+
+const fetchBroadlinkActions = (): Promise<BroadlinkAction[]> => {
+  return authenticated_api
+    .get("/actions/broadlink")
+    .then((response) => response.data);
+};
+
+export const useBroadlinkActions = (): UseQueryResult<
+  BroadlinkAction[],
+  AxiosError
+> => {
+  return useQuery<BroadlinkAction[], AxiosError>({
+    queryKey: ["BroadlinkActions"],
+    queryFn: fetchBroadlinkActions,
+  });
+};
+
+const deleteBroadlinkAction = (action_id: string): Promise<void> => {
+  return authenticated_api.delete(`/actions/broadlink/${action_id}`);
+};
+
+export const useDeleteBroadlinkAction = (): UseMutationResult<
+  void,
+  AxiosError,
+  string,
+  any
+> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (device_id: string) => {
+      return deleteBroadlinkAction(device_id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["BroadlinkActions"] });
+    },
+  });
+};
+
+const postBroadlinkAction = (
+  action: BroadlinkActionPost
+): Promise<BroadlinkAction> => {
+  return authenticated_api
+    .post("/actions/broadlink", action)
+    .then((response) => response.data);
+};
+
+export const useAddBroadlinkAction = (): UseMutationResult<
+  BroadlinkAction,
+  AxiosError,
+  BroadlinkActionPost,
+  any
+> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (action: BroadlinkActionPost) => {
+      return postBroadlinkAction(action);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["BroadlinkActions"] });
     },
   });
 };
