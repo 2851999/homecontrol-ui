@@ -365,10 +365,13 @@ export const ControllerDialog = (props: ControllerDialogProps) => {
     switch (newControlType) {
       case ControlType.AC:
         setController({ control_type: newControlType, id: "" });
+        break;
       case ControlType.BROADLINK:
         setController({ control_type: newControlType, id: "", actions: [] });
+        break;
       case ControlType.HUE_ROOM:
         setController({ control_type: newControlType, id: "", bridge_id: "" });
+        break;
     }
   };
 

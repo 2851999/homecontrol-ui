@@ -12,6 +12,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Card,
   Divider,
   FormControlLabel,
   FormGroup,
@@ -30,6 +31,11 @@ import {
 } from "@mui/material";
 import React, { forwardRef, useEffect, useState } from "react";
 import { useACDeviceState, useEditACDeviceState } from "../../api/aircon";
+import {
+  useBroadlinkActionsByIds,
+  useBroadlinkDevice,
+  usePlaybackBroadlinkAction,
+} from "../../api/broadlink";
 import { useEditRoomState, useHueRoomState } from "../../api/hue";
 import {
   ACDeviceFanSpeed,
@@ -40,9 +46,11 @@ import {
 import {
   ControlType,
   ControllerAC,
+  ControllerBroadlink,
   ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 type TooltipToggleButtonProps = ToggleButtonProps & {
   TooltipProps: Omit<TooltipProps, "children">;
@@ -250,6 +258,58 @@ const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
   );
 };
 
+interface ControllerAccordionBroadlinkProps {
+  controller: ControllerBroadlink;
+}
+
+const ControllerAccordionBroadlink = (
+  props: ControllerAccordionBroadlinkProps
+) => {
+  const deviceQuery = useBroadlinkDevice(props.controller.id);
+  const actionsQueries = useBroadlinkActionsByIds(props.controller.actions);
+
+  const playbackMutation = usePlaybackBroadlinkAction(props.controller.id);
+
+  return deviceQuery.isLoading ||
+    deviceQuery.data === undefined ||
+    actionsQueries.some(
+      (actionQuery) => actionQuery.isLoading || actionQuery.data === undefined
+    ) ? (
+    <LinearProgress />
+  ) : (
+    <Accordion elevation={2}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        Broadlink - {deviceQuery.data.name}
+      </AccordionSummary>
+      <AccordionDetails>
+        {actionsQueries.map((actionQuery) => (
+          <Card
+            key={actionQuery.data?.id}
+            sx={{
+              display: "flex",
+              paddingX: 1,
+              paddingY: 0.5,
+              alignItems: "center",
+            }}
+          >
+            <Typography>{actionQuery.data?.name}</Typography>
+            <IconButton
+              sx={{ marginLeft: "auto" }}
+              onClick={() =>
+                playbackMutation.mutate({
+                  action_id: actionQuery.data?.id || "",
+                })
+              }
+            >
+              <PlayArrowIcon color="success" />
+            </IconButton>
+          </Card>
+        ))}
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
 interface ControllerAccordionHueRoomProps {
   controller: ControllerHueRoom;
 }
@@ -399,7 +459,14 @@ export const ControllerAccordion = (props: ControllerAccordionProps) => {
         />
       );
     case ControlType.BROADLINK:
-      return null;
+      return (
+        <ControllerAccordionBroadlink
+          key={`${controller.control_type}-${
+            controller.id
+          }-${controller.actions.join("-")}`}
+          controller={controller}
+        />
+      );
     case ControlType.HUE_ROOM:
       return (
         <ControllerAccordionHueRoom

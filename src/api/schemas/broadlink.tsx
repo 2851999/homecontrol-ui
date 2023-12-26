@@ -14,7 +14,10 @@ export interface BroadlinkAction {
   name: string;
 }
 
-export interface BroadlinkActionPost {
-  device_id: string;
+export interface BroadlinkDeviceRecordPost {
   name: string;
+}
+
+export interface BroadlinkDevicePlaybackPost {
+  action_id: string;
 }

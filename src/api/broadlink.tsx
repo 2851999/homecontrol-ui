@@ -12,6 +12,7 @@ import {
   BroadlinkAction,
   BroadlinkActionPost,
   BroadlinkDevice,
+  BroadlinkDevicePlaybackPost,
   BroadlinkDevicePost,
 } from "./schemas/broadlink";
 
@@ -155,27 +156,50 @@ export const useDeleteBroadlinkAction = (): UseMutationResult<
   });
 };
 
-const postBroadlinkAction = (
+const recordBroadlinkAction = (
+  deviceId: string,
   action: BroadlinkActionPost
 ): Promise<BroadlinkAction> => {
   return authenticated_api
-    .post("/actions/broadlink", action)
+    .post(`/devices/broadlink/${deviceId}/record`, action)
     .then((response) => response.data);
 };
 
-export const useAddBroadlinkAction = (): UseMutationResult<
+export const useRecordBroadlinkAction = (): UseMutationResult<
   BroadlinkAction,
   AxiosError,
-  BroadlinkActionPost,
+  { deviceId: string; actionData: BroadlinkActionPost },
   any
 > => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (action: BroadlinkActionPost) => {
-      return postBroadlinkAction(action);
+    mutationFn: (data: {
+      deviceId: string;
+      actionData: BroadlinkActionPost;
+    }) => {
+      return recordBroadlinkAction(data.deviceId, data.actionData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["BroadlinkActions"] });
+    },
+  });
+};
+
+const playbackBroadlinkAction = (
+  deviceId: string,
+  playbackData: BroadlinkDevicePlaybackPost
+): Promise<null> => {
+  return authenticated_api
+    .post(`/devices/broadlink/${deviceId}/record`, playbackData)
+    .then((response) => response.data);
+};
+
+export const usePlaybackBroadlinkAction = (
+  deviceId: string
+): UseMutationResult<null, AxiosError, BroadlinkDevicePlaybackPost, any> => {
+  return useMutation({
+    mutationFn: (playbackData: BroadlinkDevicePlaybackPost) => {
+      return playbackBroadlinkAction(deviceId, playbackData);
     },
   });
 };

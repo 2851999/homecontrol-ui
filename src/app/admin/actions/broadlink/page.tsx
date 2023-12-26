@@ -30,7 +30,7 @@ import {
 } from "@mui/x-data-grid";
 import { useEffect, useState } from "react";
 import {
-  useAddBroadlinkAction,
+  useRecordBroadlinkAction,
   useBroadlinkActions,
   useBroadlinkDevices,
   useDeleteBroadlinkAction,
@@ -64,7 +64,9 @@ function NameStep(props: {
 }
 
 function SelectStep(props: {
+  deviceId: string | undefined;
   data: BroadlinkActionPost;
+  deviceIdError: string | undefined;
   formErrors: BroadlinkActionPost;
   onSelectDevice: (deviceId: string) => void;
 }) {
@@ -80,9 +82,9 @@ function SelectStep(props: {
         labelId="device-select-label"
         id="device-select"
         label="Broadlink Device"
-        value={props.data.device_id}
+        value={props.deviceId}
         onChange={(event) => props.onSelectDevice(event.target.value as string)}
-        error={!!props.formErrors.device_id}
+        error={!!props.deviceIdError}
       >
         {devicesQuery.data.map((device) => (
           <MenuItem key={device.id} value={device.id}>
@@ -90,14 +92,15 @@ function SelectStep(props: {
           </MenuItem>
         ))}
       </Select>
-      {!!props.formErrors.device_id && (
-        <FormHelperText error>{props.formErrors.device_id}</FormHelperText>
+      {!!props.deviceIdError && (
+        <FormHelperText error>{props.deviceIdError}</FormHelperText>
       )}
     </FormControl>
   );
 }
 
 function RecordStep(props: {
+  deviceId: string;
   data: BroadlinkActionPost;
   onClose: () => void;
   onOtherError: () => void;
@@ -106,12 +109,12 @@ function RecordStep(props: {
   const [recording, setRecording] = useState<boolean>(false);
 
   // Mutations
-  const deviceAddMutation = useAddBroadlinkAction();
+  const actionRecordMutation = useRecordBroadlinkAction();
 
   const handleRecord = () => {
     setRecording(true);
-    deviceAddMutation
-      .mutateAsync(props.data)
+    actionRecordMutation
+      .mutateAsync({ deviceId: props.deviceId, actionData: props.data })
       .then(() => {
         setRecording(false);
         props.onClose();
@@ -149,12 +152,14 @@ const ADD_DIALOGUE_STEPS = ["Name", "Select device", "Record"];
 function AddDialogue() {
   // Dialog state
   const [open, setOpen] = useState<boolean>(false);
+  const [deviceId, setDeviceId] = useState<string | undefined>(undefined);
   const [data, setData] = useState<BroadlinkActionPost>({
-    device_id: "",
     name: "",
   });
+  const [deviceIdError, setDeviceIdError] = useState<string | undefined>(
+    undefined
+  );
   const [formErrors, setFormErrors] = useState<BroadlinkActionPost>({
-    device_id: "",
     name: "",
   });
   const [otherError, setOtherError] = useState<boolean>(false);
@@ -163,7 +168,7 @@ function AddDialogue() {
   const [activeStep, setActiveStep] = useState<number>(0);
 
   // Mutations
-  const deviceAddMutation = useAddBroadlinkAction();
+  const actionRecordMutation = useRecordBroadlinkAction();
 
   // Validates the form, returning whether it was successful
   const validateForm = (): boolean => {
@@ -177,11 +182,8 @@ function AddDialogue() {
           return false;
         } else return true;
       case 1:
-        if (!!!data.device_id) {
-          setFormErrors({
-            ...formErrors,
-            device_id: "A device must be selected",
-          });
+        if (!!!deviceId) {
+          setDeviceIdError("A device must be selected");
           return false;
         } else return true;
       default:
@@ -190,20 +192,26 @@ function AddDialogue() {
   };
 
   // Resets appropriate form errors when a field is changed
-  const handleFormChange = (newData: BroadlinkActionPost) => {
+  const handleFormChange = (
+    newDeviceId: string | undefined,
+    newData: BroadlinkActionPost
+  ) => {
     if (newData.name != data.name && !!formErrors.name)
       setFormErrors({ ...formErrors, name: "" });
-    else if (newData.device_id !== data.device_id && !!formErrors.device_id)
-      setFormErrors({ ...formErrors, device_id: "" });
+    if (newDeviceId !== deviceId && !!deviceIdError)
+      setDeviceIdError(undefined);
 
+    setDeviceId(newDeviceId);
     setData(newData);
   };
 
   // Reset everything on close
   const handleClose = () => {
     setOpen(false);
-    setData({ device_id: "", name: "" });
-    setFormErrors({ device_id: "", name: "" });
+    setDeviceId(undefined);
+    setData({ name: "" });
+    setDeviceIdError(undefined);
+    setFormErrors({ name: "" });
     setOtherError(false);
     setActiveStep(0);
   };
@@ -220,8 +228,8 @@ function AddDialogue() {
 
   // Validates and then sends the request
   const handleFinish = () => {
-    deviceAddMutation
-      .mutateAsync(data)
+    actionRecordMutation
+      .mutateAsync({ deviceId: deviceId || "", actionData: data })
       .then(() => {
         handleClose();
       })
@@ -238,23 +246,26 @@ function AddDialogue() {
             data={data}
             formErrors={formErrors}
             onChangeName={(name: string) => {
-              handleFormChange({ ...data, name: name });
+              handleFormChange(deviceId, { ...data, name: name });
             }}
           />
         );
       case 1:
         return (
           <SelectStep
+            deviceId={deviceId}
             data={data}
+            deviceIdError={deviceIdError}
             formErrors={formErrors}
-            onSelectDevice={(deviceId: string) => {
-              handleFormChange({ ...data, device_id: deviceId });
+            onSelectDevice={(newDeviceId: string) => {
+              handleFormChange(newDeviceId, data);
             }}
           />
         );
       case 2:
         return (
           <RecordStep
+            deviceId={deviceId || ""}
             data={data}
             onClose={handleClose}
             onOtherError={() => setOtherError(true)}
@@ -272,7 +283,7 @@ function AddDialogue() {
       </Button>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Add action</DialogTitle>
-        {deviceAddMutation.isPending ? (
+        {actionRecordMutation.isPending ? (
           <DialogContent>
             <CircularLoadingIndicator />
           </DialogContent>
@@ -299,11 +310,12 @@ function AddDialogue() {
               <Button disabled={activeStep === 0} onClick={handleBack}>
                 Back
               </Button>
-              {activeStep === ADD_DIALOGUE_STEPS.length - 1 ? (
-                <Button onClick={handleFinish}>Finish</Button>
-              ) : (
-                <Button onClick={handleNext}>Next</Button>
-              )}
+              <Button
+                onClick={handleNext}
+                disabled={activeStep === ADD_DIALOGUE_STEPS.length - 1}
+              >
+                Next
+              </Button>
             </DialogActions>
           </>
         )}
