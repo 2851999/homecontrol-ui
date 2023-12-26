@@ -190,7 +190,7 @@ const playbackBroadlinkAction = (
   playbackData: BroadlinkDevicePlaybackPost
 ): Promise<null> => {
   return authenticated_api
-    .post(`/devices/broadlink/${deviceId}/record`, playbackData)
+    .post(`/devices/broadlink/${deviceId}/playback`, playbackData)
     .then((response) => response.data);
 };
 
