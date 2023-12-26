@@ -12,6 +12,7 @@ export interface ControllerAC {
 export interface ControllerBroadlink {
   control_type: ControlType.BROADLINK;
   id: string;
+  actions: string[];
 }
 
 export interface ControllerHueRoom {

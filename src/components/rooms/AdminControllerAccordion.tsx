@@ -4,10 +4,16 @@ import {
   AccordionDetails,
   AccordionSummary,
   LinearProgress,
+  List,
+  ListItem,
+  ListItemText,
   Typography,
 } from "@mui/material";
 import { useACDevice } from "../../api/aircon";
-import { useBroadlinkDevice } from "../../api/broadlink";
+import {
+  useBroadlinkActionsByIds,
+  useBroadlinkDevice,
+} from "../../api/broadlink";
 import { useHueBridge, useHueRoom } from "../../api/hue";
 import {
   ControlType,
@@ -46,7 +52,13 @@ const AdminControllerAccordionBroadlink = (
   props: AdminControllerAccordionBroadlinkProps
 ) => {
   const deviceQuery = useBroadlinkDevice(props.controller.id);
-  return deviceQuery.isLoading || deviceQuery.data === undefined ? (
+  const actionsQueries = useBroadlinkActionsByIds(props.controller.actions);
+
+  return deviceQuery.isLoading ||
+    deviceQuery.data === undefined ||
+    actionsQueries.some(
+      (actionQuery) => actionQuery.isLoading || actionQuery.data === undefined
+    ) ? (
     <LinearProgress />
   ) : (
     <Accordion elevation={2}>
@@ -56,6 +68,19 @@ const AdminControllerAccordionBroadlink = (
       <AccordionDetails>
         <Typography>ID: {deviceQuery.data.id}</Typography>
         <Typography>Name: {deviceQuery.data.name}</Typography>
+        <Typography variant="h5" sx={{ paddingTop: 2 }}>
+          Actions
+        </Typography>
+        <List disablePadding>
+          {actionsQueries.map((actionQuery) => (
+            <ListItem key={actionQuery.data?.id} disableGutters disablePadding>
+              <ListItemText
+                primary={actionQuery.data?.name}
+                secondary={actionQuery.data?.id}
+              />
+            </ListItem>
+          ))}
+        </List>
       </AccordionDetails>
     </Accordion>
   );

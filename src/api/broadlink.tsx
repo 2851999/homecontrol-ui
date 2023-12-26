@@ -2,6 +2,7 @@ import {
   UseMutationResult,
   UseQueryResult,
   useMutation,
+  useQueries,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -104,6 +105,32 @@ export const useBroadlinkActions = (): UseQueryResult<
   return useQuery<BroadlinkAction[], AxiosError>({
     queryKey: ["BroadlinkActions"],
     queryFn: fetchBroadlinkActions,
+  });
+};
+
+const fetchBroadlinkAction = (actionId: string): Promise<BroadlinkAction> => {
+  return authenticated_api
+    .get(`/actions/broadlink/${actionId}`)
+    .then((response) => response.data);
+};
+
+export const useBroadlinkAction = (
+  actionId: string
+): UseQueryResult<BroadlinkAction, AxiosError> => {
+  return useQuery<BroadlinkAction, AxiosError>({
+    queryKey: ["BroadlinkAction", actionId],
+    queryFn: () => fetchBroadlinkAction(actionId),
+  });
+};
+
+export const useBroadlinkActionsByIds = (
+  actionIds: string[]
+): UseQueryResult<BroadlinkAction, AxiosError>[] => {
+  return useQueries({
+    queries: actionIds.map((actionId) => ({
+      queryKey: ["BroadlinkAction", actionId],
+      queryFn: () => fetchBroadlinkAction(actionId),
+    })),
   });
 };
 

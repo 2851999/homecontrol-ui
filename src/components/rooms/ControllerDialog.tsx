@@ -15,10 +15,15 @@ import {
   Step,
   StepLabel,
   Stepper,
+  Typography,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useACDevices } from "../../api/aircon";
-import { useBroadlinkDevices } from "../../api/broadlink";
+import {
+  useBroadlinkActions,
+  useBroadlinkActionsByIds,
+  useBroadlinkDevices,
+} from "../../api/broadlink";
 import { useHueBridges, useHueRooms } from "../../api/hue";
 import {
   ControlType,
@@ -28,6 +33,15 @@ import {
   RoomController,
 } from "../../api/schemas/rooms";
 import { CircularLoadingIndicator } from "../CircularLoadingIndicator";
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColDef,
+  GridRowParams,
+} from "@mui/x-data-grid";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import { BroadlinkAction } from "../../api/schemas/broadlink";
 
 interface ControllerSelectStepACProps {
   controller: ControllerAC;
@@ -65,6 +79,76 @@ const ControllerSelectStepAC = (props: ControllerSelectStepACProps) => {
   );
 };
 
+interface ControllerSelectStepBroadlinkActionDialogProps {
+  renderButton: (onClick: () => void) => void;
+  onAddAction: (actionId: string) => void;
+}
+
+const ControllerSelectStepBroadlinkActionDialog = (
+  props: ControllerSelectStepBroadlinkActionDialogProps
+) => {
+  // Dialog state
+  const [open, setOpen] = useState<boolean>(false);
+  const [action, setAction] = useState<string | undefined>(undefined);
+
+  // Available Broaadlink actions
+  const actionsQuery = useBroadlinkActions();
+
+  // Reset everything on close
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleAdd = () => {
+    props.onAddAction(action || "");
+    handleClose();
+  };
+
+  return (
+    <>
+      {props.renderButton(() => setOpen(true))}
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogTitle>Add Broadlink Action</DialogTitle>
+        <DialogContent>
+          {actionsQuery.isLoading || actionsQuery.data === undefined ? (
+            <CircularLoadingIndicator />
+          ) : (
+            <FormControl fullWidth>
+              <InputLabel id="action-select-label">Broadlink Action</InputLabel>
+              <Select
+                labelId="action-select-label"
+                id="action-select"
+                label="Broadlink Action"
+                value={action}
+                onChange={(event) => setAction(event.target.value)}
+              >
+                {actionsQuery.data.map((action) => (
+                  <MenuItem key={action.id} value={action.id}>
+                    {action.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Box sx={{ flex: "1 1 auto" }} />
+          <Button
+            disabled={
+              // Disable until the relevant details are selected
+              action === undefined
+            }
+            onClick={handleAdd}
+          >
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
 interface ControllerSelectStepBroadlinkProps {
   controller: ControllerBroadlink;
   onControllerUpdated: (newController: RoomController) => void;
@@ -73,33 +157,95 @@ interface ControllerSelectStepBroadlinkProps {
 const ControllerSelectStepBroadlink = (
   props: ControllerSelectStepBroadlinkProps
 ) => {
-  // Existing Broadlink devices
+  // Existing Broadlink devices and actions
   const devicesQuery = useBroadlinkDevices();
+  const actionsQueries = useBroadlinkActionsByIds(props.controller.actions);
+
+  const handleDeleteClicked = (params: GridRowParams) => {
+    props.onControllerUpdated({
+      ...props.controller,
+      actions: props.controller.actions.filter(
+        (id: string) => id !== params.id
+      ),
+    });
+  };
+
+  const actionsTableColumns: GridColDef[] = [
+    { field: "id", headerName: "ID", flex: 1 },
+    { field: "name", headerName: "Name", flex: 1 },
+    {
+      field: "actions",
+      headerName: "Actions",
+      type: "actions",
+      getActions: (params: GridRowParams) => {
+        return [
+          <GridActionsCellItem
+            icon={<DeleteIcon />}
+            label="Delete"
+            key="delete"
+            onClick={() => handleDeleteClicked(params)}
+          />,
+        ];
+      },
+    },
+  ];
 
   return devicesQuery.isLoading || devicesQuery.data === undefined ? (
     <CircularLoadingIndicator />
   ) : (
-    <FormControl fullWidth>
-      <InputLabel id="device-select-label">Broadlink Device</InputLabel>
-      <Select
-        labelId="type-select-label"
-        id="type-select"
-        label="Broadlink Device"
-        value={props.controller.id}
-        onChange={(event) =>
-          props.onControllerUpdated({
-            control_type: ControlType.BROADLINK,
-            id: event.target.value as string,
-          })
-        }
-      >
-        {devicesQuery.data.map((device) => (
-          <MenuItem key={device.id} value={device.id}>
-            {device.name}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
+    <>
+      <FormControl fullWidth>
+        <InputLabel id="device-select-label">Broadlink Device</InputLabel>
+        <Select
+          labelId="type-select-label"
+          id="type-select"
+          label="Broadlink Device"
+          value={props.controller.id}
+          onChange={(event) =>
+            props.onControllerUpdated({
+              ...props.controller,
+              control_type: ControlType.BROADLINK,
+              id: event.target.value as string,
+            })
+          }
+        >
+          {devicesQuery.data.map((device) => (
+            <MenuItem key={device.id} value={device.id}>
+              {device.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+      <Typography variant="h5" sx={{ paddingY: 2 }}>
+        Actions
+      </Typography>
+      {actionsQueries.some(
+        (actionQuery) => actionQuery.isLoading || actionQuery.data === undefined
+      ) ? (
+        <CircularLoadingIndicator />
+      ) : (
+        <>
+          <ControllerSelectStepBroadlinkActionDialog
+            renderButton={(onClick) => (
+              <Button startIcon={<AddIcon />} onClick={onClick}>
+                Add action
+              </Button>
+            )}
+            onAddAction={(actionId) =>
+              props.onControllerUpdated({
+                ...props.controller,
+                actions: [...props.controller.actions, actionId],
+              })
+            }
+          />
+          <DataGrid
+            rows={actionsQueries.map((actionQuery) => actionQuery.data)}
+            columns={actionsTableColumns}
+            autoHeight
+          />
+        </>
+      )}
+    </>
   );
 };
 
@@ -220,7 +366,7 @@ export const ControllerDialog = (props: ControllerDialogProps) => {
       case ControlType.AC:
         setController({ control_type: newControlType, id: "" });
       case ControlType.BROADLINK:
-        setController({ control_type: newControlType, id: "" });
+        setController({ control_type: newControlType, id: "", actions: [] });
       case ControlType.HUE_ROOM:
         setController({ control_type: newControlType, id: "", bridge_id: "" });
     }
