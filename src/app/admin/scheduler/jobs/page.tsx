@@ -33,7 +33,11 @@ import {
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import { LoadingPage } from "../../../../components/LoadingPage";
-import { JobPost, TriggerType } from "../../../../api/schemas/scheduler";
+import {
+  JobPost,
+  TimeDelta,
+  TriggerType,
+} from "../../../../api/schemas/scheduler";
 import { CircularLoadingIndicator } from "../../../../components/CircularLoadingIndicator";
 import { DateTimePicker, MobileDateTimePicker } from "@mui/x-date-pickers";
 import dayjs from "dayjs";
@@ -184,8 +188,8 @@ function AddDialogue() {
                           ...data.trigger,
                           trigger_type: TriggerType.INTERVAL,
                           value: {
-                            ...data.trigger.value,
-                            weeks: event.target.value,
+                            ...(data.trigger.value as TimeDelta),
+                            weeks: Number(event.target.value),
                           },
                         },
                       })
@@ -204,8 +208,8 @@ function AddDialogue() {
                           ...data.trigger,
                           trigger_type: TriggerType.INTERVAL,
                           value: {
-                            ...data.trigger.value,
-                            days: event.target.value,
+                            ...(data.trigger.value as TimeDelta),
+                            days: Number(event.target.value),
                           },
                         },
                       })
@@ -224,8 +228,8 @@ function AddDialogue() {
                           ...data.trigger,
                           trigger_type: TriggerType.INTERVAL,
                           value: {
-                            ...data.trigger.value,
-                            hours: event.target.value,
+                            ...(data.trigger.value as TimeDelta),
+                            hours: Number(event.target.value),
                           },
                         },
                       })
@@ -245,8 +249,8 @@ function AddDialogue() {
                           ...data.trigger,
                           trigger_type: TriggerType.INTERVAL,
                           value: {
-                            ...data.trigger.value,
-                            minutes: event.target.value,
+                            ...(data.trigger.value as TimeDelta),
+                            minutes: Number(event.target.value),
                           },
                         },
                       })
@@ -265,8 +269,8 @@ function AddDialogue() {
                           ...data.trigger,
                           trigger_type: TriggerType.INTERVAL,
                           value: {
-                            ...data.trigger.value,
-                            seconds: event.target.value,
+                            ...(data.trigger.value as TimeDelta),
+                            seconds: Number(event.target.value),
                           },
                         },
                       })
