@@ -196,7 +196,7 @@ function AddDialogue() {
     newDeviceId: string | undefined,
     newData: BroadlinkDeviceRecordPost
   ) => {
-    if (newData.name != data.name && !!formErrors.name)
+    if (newData.name !== data.name && !!formErrors.name)
       setFormErrors({ ...formErrors, name: "" });
     if (newDeviceId !== deviceId && !!deviceIdError)
       setDeviceIdError(undefined);
@@ -224,18 +224,6 @@ function AddDialogue() {
   const handleNext = () => {
     // Validate
     if (validateForm()) setActiveStep(activeStep + 1);
-  };
-
-  // Validates and then sends the request
-  const handleFinish = () => {
-    actionRecordMutation
-      .mutateAsync({ deviceId: deviceId || "", actionData: data })
-      .then(() => {
-        handleClose();
-      })
-      .catch((error) => {
-        setOtherError(true);
-      });
   };
 
   const getStepContent = (activeStep: number) => {

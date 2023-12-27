@@ -1,9 +1,12 @@
 "use client";
-import CustomThemeProvider from "../theme/CustomThemeProvider";
+
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { CustomStoreProvider } from "..//state/CustomStoreProvider";
 import { AuthenticationProvider } from "../components/AuthenticationProvider";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HomeControlAppBar } from "../components/HomeControlAppBar";
+import CustomThemeProvider from "../theme/CustomThemeProvider";
 
 export default function RootLayout(props: { children: any }) {
   const { children } = props;
@@ -17,10 +20,12 @@ export default function RootLayout(props: { children: any }) {
         <CustomStoreProvider waitToLoad={true}>
           <CustomThemeProvider>
             <QueryClientProvider client={queryClient}>
-              <AuthenticationProvider>
-                <HomeControlAppBar />
-                {children}
-              </AuthenticationProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <AuthenticationProvider>
+                  <HomeControlAppBar />
+                  {children}
+                </AuthenticationProvider>
+              </LocalizationProvider>
             </QueryClientProvider>
           </CustomThemeProvider>
         </CustomStoreProvider>
