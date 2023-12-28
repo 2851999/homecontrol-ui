@@ -35,7 +35,7 @@ export const AuthenticatedPage = (props: AuthenticatedProps) => {
   useEffect(() => {
     // Redirect to login if needed
     if (user === undefined) router.push("/login");
-  }, [user]);
+  }, [router, user]);
 
   // Load until the user is obtained
   // Also ensure the user has the required access level

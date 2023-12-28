@@ -104,6 +104,9 @@ authenticated_api.interceptors.response.use(
             callback(response.access_token)
           );
 
+          // Update the token for this request as well
+          originalRequest.headers.Authorization = `Bearer ${response.access_token}`;
+
           // Retry
           return axios(originalRequest);
         } catch (error) {
