@@ -29,7 +29,10 @@ interface Route {
 }
 
 /* Standard routes all users have access to */
-const STANDARD_ROUTES: Route[] = [{ text: "Home", path: "/" }];
+const STANDARD_ROUTES: Route[] = [
+  { text: "Home", path: "/" },
+  { text: "Monitoring", path: "/monitoring" },
+];
 
 /* Specific admin routes to have navigation for */
 const ADMIN_ROUTES: Route[] = [
