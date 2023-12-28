@@ -4,10 +4,16 @@ import { useHistoricTemperatures } from "../api/temperature";
 
 interface RoomTemperatureGraphProps {
   roomName: string;
+  startTimestamp?: Date;
+  endTimestamp?: Date;
 }
 
 export const RoomTemperatureGraph = (props: RoomTemperatureGraphProps) => {
-  const historicTemperaturesQuery = useHistoricTemperatures(props.roomName);
+  const historicTemperaturesQuery = useHistoricTemperatures(
+    props.roomName,
+    props.startTimestamp,
+    props.endTimestamp
+  );
 
   return (
     <Card>

@@ -51,7 +51,8 @@ const fetchHistoricTemperatures = (
     .then((response) =>
       response.data.map((data: HistoricTemperature) => ({
         ...data,
-        timestamp: dayjs(new Date(data.timestamp)),
+        // Convert to appropriate type and ensure taken as UTC
+        timestamp: dayjs(new Date(data.timestamp + "Z")),
       }))
     );
 };
