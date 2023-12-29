@@ -47,9 +47,21 @@ interface HueRoomLightState {
   colour: HueColour | null;
 }
 
+enum HueRoomSceneStatus {
+  INACTIVE = "inactive",
+  STATIC = "static",
+  DYNAMIC_PALETTE = "dynamic_palette",
+}
+
+interface HueRoomSceneState {
+  name: string;
+  status: HueRoomSceneStatus;
+}
+
 interface HueRoomState {
   grouped_light: HueRoomGroupedLightState;
   lights: { [key: string]: HueRoomLightState };
+  scenes: { [key: string]: HueRoomSceneState };
 }
 
 interface HueRoomGroupedLightStatePatch {

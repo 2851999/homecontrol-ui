@@ -6,6 +6,7 @@ import { Box, Card, CardContent, IconButton, Typography } from "@mui/material";
 import { useDeleteRoom } from "../../api/rooms";
 import { Room } from "../../api/schemas/rooms";
 import { AdminControllerAccordion } from "./AdminControllerAccordion";
+import { AdminRoomActionsAccordion } from "./AdminRoomActionsAccordion";
 import { RoomDialog } from "./RoomDialog";
 
 export interface AdminRoomCardProps {
@@ -25,6 +26,7 @@ export const AdminRoomCard = (props: AdminRoomCardProps) => {
         {props.room.controllers.map((controller, index) => (
           <AdminControllerAccordion key={index} controller={controller} />
         ))}
+        <AdminRoomActionsAccordion room={props.room} />
         <Box sx={{ textAlign: "center" }}>
           <RoomDialog
             renderButton={(onClick) => (

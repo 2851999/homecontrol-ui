@@ -1,0 +1,77 @@
+import {
+  UseMutationResult,
+  UseQueryResult,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { authenticated_api } from "./auth";
+import { RoomAction, TaskType } from "./schemas/actions";
+
+const fetchRoomActions = (roomId?: string): Promise<RoomAction[]> => {
+  return authenticated_api
+    .get("/actions/room", {
+      params: { room_id: roomId },
+    })
+    .then((response) => response.data);
+};
+
+export const useRoomActions = (
+  roomId?: string
+): UseQueryResult<RoomAction[], AxiosError> => {
+  return useQuery<RoomAction[], AxiosError>({
+    queryKey: ["RoomActions", roomId],
+    queryFn: () => fetchRoomActions(roomId),
+  });
+};
+
+const deleteRoomAction = (actionId: string): Promise<void> => {
+  return authenticated_api.delete(`/actions/room/${actionId}`);
+};
+
+export const useDeleteRoomAction = (): UseMutationResult<
+  void,
+  AxiosError,
+  string,
+  any
+> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (actionId: string) => deleteRoomAction(actionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["RoomActions"] });
+    },
+  });
+};
+
+const executeRoomAction = (actionId: string): Promise<void> => {
+  return authenticated_api.post(`/actions/room/${actionId}`);
+};
+
+export const useExecuteRoomAction = (
+  action: RoomAction
+): UseMutationResult<void, AxiosError, void, any> => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => executeRoomAction(action.id),
+    onSuccess: () => {
+      // Invalidate only what is necessary
+      action.tasks.forEach((task) => {
+        switch (task.task_type) {
+          case TaskType.AC_STATE:
+            queryClient.invalidateQueries({
+              queryKey: ["ACDeviceState", task.device_id],
+            });
+            break;
+          case TaskType.HUE_SCENE:
+            queryClient.invalidateQueries({
+              // TODO: Only invalidate for the specific room (information not available here at the moment)
+              queryKey: ["HueRoomState", task.bridge_id],
+            });
+        }
+      });
+    },
+  });
+};
