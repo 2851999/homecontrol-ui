@@ -49,6 +49,7 @@ export const AdminRoomActionsAccordion = (
                   Add action
                 </Button>
               )}
+              room={props.room}
             />
             {actionsQuery.data.map((action) => (
               <Card

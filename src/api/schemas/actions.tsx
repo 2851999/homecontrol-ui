@@ -33,3 +33,17 @@ export interface RoomAction {
   icon: string;
   tasks: Task[];
 }
+
+export interface TaskACStatePost {
+  task_type: TaskType.AC_STATE;
+  device_id: string;
+}
+
+export type TaskPost = TaskACStatePost | TaskBroadlinkAction | TaskHueScene;
+
+export interface RoomActionPost {
+  name: string;
+  room_id: string;
+  icon: string;
+  tasks: TaskPost[];
+}

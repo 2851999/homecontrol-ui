@@ -112,7 +112,7 @@ export const RoomDialog = (props: RoomDialogProps) => {
                   <DeleteIcon />
                 </IconButton>
               </Box>
-            ))}{" "}
+            ))}
             <ControllerDialog
               renderButton={(onClick) => (
                 <Button startIcon={<AddIcon />} onClick={onClick}>
