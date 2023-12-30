@@ -18,6 +18,8 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { AuthenticatedComponent } from "./Authenticated";
+import { useInfo } from "../api/api";
+import packageConfig from "../../package.json";
 
 interface Route {
   // Text to display in the menu
@@ -143,6 +145,9 @@ export const NavigationMenu = () => {
   // State of the navigation drawer
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
 
+  // Info
+  const infoQuery = useInfo();
+
   return (
     <>
       <IconButton
@@ -219,6 +224,12 @@ export const NavigationMenu = () => {
               })}
             </List>
           </AuthenticatedComponent>
+        </Box>
+        <Box sx={{ marginTop: "auto" }}>
+          <Typography sx={{ marginLeft: 2, marginBottom: 2 }}>
+            API v{infoQuery.data?.version.homecontrol_api} | UI v
+            {packageConfig.version}
+          </Typography>
         </Box>
       </SwipeableDrawer>
     </>
