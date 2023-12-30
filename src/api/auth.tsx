@@ -8,12 +8,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import axios, { AxiosError, isAxiosError } from "axios";
-import {
-  getAccessToken,
-  getRefreshToken,
-  removeUserSession,
-  setUserSession,
-} from "../authentication";
+import { setLoggedIn } from "../authentication";
 import { BASE_URL } from "./api";
 import {
   LoginPost,
@@ -91,24 +86,19 @@ authenticated_api.interceptors.response.use(
             .post(`${BASE_URL}/auth/refresh`)
             .then((response) => response.data);
 
-          // setUserSession(response);
-
           // Re-run any saved requests with the new token
           isFetchingAccessToken = false;
           accessTokenSubscribers.filter((callback) => callback());
-
-          // Update the token for this request as well
-          // originalRequest.headers.Authorization = `Bearer ${response.access_token}`;
 
           // Retry
           return axios(originalRequest);
         } catch (error) {
           // Error while refreshing, check if its also a token expiry
           if (isAxiosError(error) && error.response?.status == 401) {
-            // Refresh token expired so remove session and go back to login
-            removeUserSession();
+            // Refresh token expired so remove login and go back to login page
+            setLoggedIn(false);
             accessTokenSubscribers.filter((callback) =>
-              callback("", error as AxiosError)
+              callback(error as AxiosError)
             );
             window.location.href = "/login";
           }
