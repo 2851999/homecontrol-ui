@@ -226,7 +226,10 @@ export const NavigationMenu = () => {
           </AuthenticatedComponent>
         </Box>
         <Box sx={{ marginTop: "auto" }}>
-          <Typography sx={{ marginLeft: 2, marginBottom: 2 }}>
+          <Typography
+            sx={{ marginLeft: 2, marginBottom: 2 }}
+            color="text.secondary"
+          >
             API v{infoQuery.data?.version.homecontrol_api} | UI v
             {packageConfig.version}
           </Typography>
