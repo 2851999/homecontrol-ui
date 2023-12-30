@@ -48,7 +48,7 @@ export const postUser = (user: UserPost): Promise<User> => {
  */
 export const postLogin = (login_data: LoginPost): Promise<UserSession> => {
   return axios
-    .post(`${BASE_URL}/auth/login`, login_data)
+    .post(`${BASE_URL}/auth/login`, login_data, { withCredentials: true })
     .then((response) => response.data);
 };
 
@@ -57,8 +57,7 @@ export const postLogin = (login_data: LoginPost): Promise<UserSession> => {
  */
 authenticated_api.interceptors.request.use(
   (config) => {
-    const accessToken = getAccessToken();
-    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+    config.withCredentials = true;
     return config;
   },
   (error) => Promise.reject(error)
@@ -66,10 +65,7 @@ authenticated_api.interceptors.request.use(
 
 // See https://gist.github.com/mkjiau/650013a99c341c9f23ca00ccb213db1c
 let isFetchingAccessToken = false;
-let accessTokenSubscribers: ((
-  accessToken: string,
-  error?: AxiosError
-) => any)[] = [];
+let accessTokenSubscribers: ((error?: AxiosError) => any)[] = [];
 
 /**
  * Intercept on the response to handle token expiry and refresh
@@ -91,21 +87,18 @@ authenticated_api.interceptors.response.use(
 
         try {
           // Attempt to refresh the user session
-          const refreshToken = getRefreshToken();
           const response: UserSession = await axios
-            .post(`${BASE_URL}/auth/refresh`, { refresh_token: refreshToken })
+            .post(`${BASE_URL}/auth/refresh`)
             .then((response) => response.data);
 
-          setUserSession(response);
+          // setUserSession(response);
 
           // Re-run any saved requests with the new token
           isFetchingAccessToken = false;
-          accessTokenSubscribers.filter((callback) =>
-            callback(response.access_token)
-          );
+          accessTokenSubscribers.filter((callback) => callback());
 
           // Update the token for this request as well
-          originalRequest.headers.Authorization = `Bearer ${response.access_token}`;
+          // originalRequest.headers.Authorization = `Bearer ${response.access_token}`;
 
           // Retry
           return axios(originalRequest);
@@ -125,15 +118,12 @@ authenticated_api.interceptors.response.use(
         // Require refresh but another request is already performing - add to a
         // list to be resolved later once the new token is obtained
         return new Promise((resolve) => {
-          accessTokenSubscribers.push(
-            (accessToken: string, error?: AxiosError) => {
-              if (error !== undefined) resolve(Promise.reject(error));
-              else {
-                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-                resolve(axios(originalRequest));
-              }
+          accessTokenSubscribers.push((error?: AxiosError) => {
+            if (error !== undefined) resolve(Promise.reject(error));
+            else {
+              resolve(axios(originalRequest));
             }
-          );
+          });
         });
       }
     } else return Promise.reject(error);

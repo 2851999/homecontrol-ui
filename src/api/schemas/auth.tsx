@@ -29,6 +29,4 @@ export interface LoginPost {
 export interface UserSession {
   id: string;
   user_id: string;
-  access_token: string;
-  refresh_token: string;
 }

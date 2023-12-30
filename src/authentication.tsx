@@ -13,17 +13,15 @@ export const getRefreshToken = (): string | null => {
 };
 
 export const setUserSession = (userSession: UserSession) => {
-  localStorage.setItem("access_token", userSession.access_token);
-  localStorage.setItem("refresh_token", userSession.refresh_token);
+  localStorage.setItem("logged_in", "true");
 };
 
 export const removeUserSession = () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
+  localStorage.removeItem("logged_in");
 };
 
 export const isLoggedIn = (): boolean => {
-  return localStorage.getItem("access_token") !== null;
+  return localStorage.getItem("logged_in") === "true";
 };
 
 /**
