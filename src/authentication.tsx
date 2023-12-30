@@ -27,7 +27,7 @@ export const handleLogin = async (
 ) => {
   try {
     // Await login
-    const response = await postLogin(login_data);
+    await postLogin(login_data);
     setLoggedIn(true);
 
     // Set the user to start loading

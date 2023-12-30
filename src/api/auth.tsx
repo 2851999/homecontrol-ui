@@ -82,8 +82,10 @@ authenticated_api.interceptors.response.use(
 
         try {
           // Attempt to refresh the user session
-          const response: UserSession = await axios
-            .post(`${BASE_URL}/auth/refresh`)
+          await axios
+            .post(`${BASE_URL}/auth/refresh`, undefined, {
+              withCredentials: true,
+            })
             .then((response) => response.data);
 
           // Re-run any saved requests with the new token
