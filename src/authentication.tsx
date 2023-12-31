@@ -4,26 +4,13 @@ import axios, { AxiosResponse } from "axios";
 import { postLogin, postLogout } from "./api/auth";
 import { LoginPost, User, UserSession } from "./api/schemas/auth";
 
-export const getAccessToken = (): string | null => {
-  return localStorage.getItem("access_token");
-};
-
-export const getRefreshToken = (): string | null => {
-  return localStorage.getItem("refresh_token");
-};
-
-export const setUserSession = (userSession: UserSession) => {
-  localStorage.setItem("access_token", userSession.access_token);
-  localStorage.setItem("refresh_token", userSession.refresh_token);
-};
-
-export const removeUserSession = () => {
-  localStorage.removeItem("access_token");
-  localStorage.removeItem("refresh_token");
+export const setLoggedIn = (value: boolean) => {
+  if (value) localStorage.setItem("logged_in", "true");
+  else localStorage.removeItem("logged_in");
 };
 
 export const isLoggedIn = (): boolean => {
-  return localStorage.getItem("access_token") !== null;
+  return localStorage.getItem("logged_in") === "true";
 };
 
 /**
@@ -40,8 +27,8 @@ export const handleLogin = async (
 ) => {
   try {
     // Await login
-    const response = await postLogin(login_data);
-    setUserSession(response);
+    await postLogin(login_data);
+    setLoggedIn(true);
 
     // Set the user to start loading
     setUser(null);
@@ -62,8 +49,8 @@ export const handleLogout = async (router: any) => {
   // Notify backend
   await postLogout();
 
-  // Remove tokens
-  removeUserSession();
+  // Remove from local storage
+  setLoggedIn(false);
 
   // Return to login
   router.push("/login");

@@ -8,12 +8,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import axios, { AxiosError, isAxiosError } from "axios";
-import {
-  getAccessToken,
-  getRefreshToken,
-  removeUserSession,
-  setUserSession,
-} from "../authentication";
+import { setLoggedIn } from "../authentication";
 import { BASE_URL } from "./api";
 import {
   LoginPost,
@@ -48,7 +43,7 @@ export const postUser = (user: UserPost): Promise<User> => {
  */
 export const postLogin = (login_data: LoginPost): Promise<UserSession> => {
   return axios
-    .post(`${BASE_URL}/auth/login`, login_data)
+    .post(`${BASE_URL}/auth/login`, login_data, { withCredentials: true })
     .then((response) => response.data);
 };
 
@@ -57,8 +52,7 @@ export const postLogin = (login_data: LoginPost): Promise<UserSession> => {
  */
 authenticated_api.interceptors.request.use(
   (config) => {
-    const accessToken = getAccessToken();
-    if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
+    config.withCredentials = true;
     return config;
   },
   (error) => Promise.reject(error)
@@ -66,10 +60,7 @@ authenticated_api.interceptors.request.use(
 
 // See https://gist.github.com/mkjiau/650013a99c341c9f23ca00ccb213db1c
 let isFetchingAccessToken = false;
-let accessTokenSubscribers: ((
-  accessToken: string,
-  error?: AxiosError
-) => any)[] = [];
+let accessTokenSubscribers: ((error?: AxiosError) => any)[] = [];
 
 /**
  * Intercept on the response to handle token expiry and refresh
@@ -91,31 +82,25 @@ authenticated_api.interceptors.response.use(
 
         try {
           // Attempt to refresh the user session
-          const refreshToken = getRefreshToken();
-          const response: UserSession = await axios
-            .post(`${BASE_URL}/auth/refresh`, { refresh_token: refreshToken })
+          await axios
+            .post(`${BASE_URL}/auth/refresh`, undefined, {
+              withCredentials: true,
+            })
             .then((response) => response.data);
-
-          setUserSession(response);
 
           // Re-run any saved requests with the new token
           isFetchingAccessToken = false;
-          accessTokenSubscribers.filter((callback) =>
-            callback(response.access_token)
-          );
-
-          // Update the token for this request as well
-          originalRequest.headers.Authorization = `Bearer ${response.access_token}`;
+          accessTokenSubscribers.filter((callback) => callback());
 
           // Retry
           return axios(originalRequest);
         } catch (error) {
           // Error while refreshing, check if its also a token expiry
           if (isAxiosError(error) && error.response?.status == 401) {
-            // Refresh token expired so remove session and go back to login
-            removeUserSession();
+            // Refresh token expired so remove login and go back to login page
+            setLoggedIn(false);
             accessTokenSubscribers.filter((callback) =>
-              callback("", error as AxiosError)
+              callback(error as AxiosError)
             );
             window.location.href = "/login";
           }
@@ -125,15 +110,12 @@ authenticated_api.interceptors.response.use(
         // Require refresh but another request is already performing - add to a
         // list to be resolved later once the new token is obtained
         return new Promise((resolve) => {
-          accessTokenSubscribers.push(
-            (accessToken: string, error?: AxiosError) => {
-              if (error !== undefined) resolve(Promise.reject(error));
-              else {
-                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-                resolve(axios(originalRequest));
-              }
+          accessTokenSubscribers.push((error?: AxiosError) => {
+            if (error !== undefined) resolve(Promise.reject(error));
+            else {
+              resolve(axios(originalRequest));
             }
-          );
+          });
         });
       }
     } else return Promise.reject(error);
