@@ -10,6 +10,7 @@ import {
   useAvailableTasks,
   useDeleteJob,
   useJobs,
+  usePatchJob,
 } from "../../../../api/scheduler";
 
 import AddIcon from "@mui/icons-material/Add";
@@ -36,6 +37,7 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import {
   JobPost,
+  JobStatus,
   TimeDelta,
   TriggerType,
 } from "../../../../api/schemas/scheduler";
@@ -284,7 +286,6 @@ function AddDialogue() {
       case TriggerType.CRON:
         return (
           <Grid item>
-            {" "}
             <TextField
               label="Crontab"
               value={data.trigger.value}
@@ -407,12 +408,28 @@ function Toolbar() {
   );
 }
 
+import PauseIcon from "@mui/icons-material/Pause";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+
 export default function JobsPage() {
   // Obtain all jobs
   const jobsQuery = useJobs();
 
   // Mutations
+  const JobPatchMutation = usePatchJob();
   const jobDeleteMutation = useDeleteJob();
+
+  const handlePauseResumeClicked = async (params: GridRowParams) => {
+    await JobPatchMutation.mutate({
+      jobId: params.row.id,
+      jobData: {
+        status:
+          params.row.status === JobStatus.ACTIVE
+            ? JobStatus.PAUSED
+            : JobStatus.ACTIVE,
+      },
+    });
+  };
 
   const handleDeleteClicked = async (params: GridRowParams) => {
     await jobDeleteMutation.mutate(params.id as string);
@@ -421,12 +438,21 @@ export default function JobsPage() {
   const jobsTableColumns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 1 },
     { field: "name", headerName: "Name", flex: 1 },
+    { field: "status", headerName: "Status", flex: 1 },
     {
       field: "actions",
       headerName: "Actions",
       type: "actions",
       getActions: (params: GridRowParams) => {
+        const active = params.row.status === JobStatus.ACTIVE;
+
         return [
+          <GridActionsCellItem
+            icon={active ? <PauseIcon /> : <PlayArrowIcon />}
+            label={active ? "Pause" : "Resume"}
+            key={active ? "pause" : "resume"}
+            onClick={() => handlePauseResumeClicked(params)}
+          />,
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label="Delete"

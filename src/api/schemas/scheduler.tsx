@@ -29,15 +29,28 @@ export interface TriggerCron {
 
 export type Trigger = TriggerDatetime | TriggerInterval | TriggerCron;
 
+export enum JobStatus {
+  ACTIVE = "active",
+  PAUSED = "paused",
+}
+
 export interface Job {
   id: string;
   name: string;
   task: string;
   trigger: Trigger;
+  status: JobStatus;
 }
 
 export interface JobPost {
   name: string;
   task: string;
   trigger: Trigger;
+}
+
+export interface JobPatch {
+  name?: string;
+  task?: string;
+  trigger?: Trigger;
+  status?: JobStatus;
 }
