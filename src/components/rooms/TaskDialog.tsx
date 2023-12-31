@@ -16,30 +16,27 @@ import {
   StepLabel,
   Stepper,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useACDevices } from "../../api/aircon";
 import {
-  ControlType,
-  ControllerHueRoom,
-  Room,
-  RoomController,
-} from "../../api/schemas/rooms";
+  useBroadlinkActionsByIds,
+  useBroadlinkDevices,
+} from "../../api/broadlink";
+import { useHueRoomState } from "../../api/hue";
 import {
-  Task,
   TaskACStatePost,
   TaskBroadlinkAction,
   TaskHueScene,
   TaskPost,
   TaskType,
 } from "../../api/schemas/actions";
-import { CircularLoadingIndicator } from "../CircularLoadingIndicator";
-import { useACDevices } from "../../api/aircon";
 import {
-  useBroadlinkAction,
-  useBroadlinkActions,
-  useBroadlinkActionsByIds,
-  useBroadlinkDevices,
-} from "../../api/broadlink";
-import { useHueBridges, useHueRoom, useHueRoomState } from "../../api/hue";
+  ControlType,
+  ControllerHueRoom,
+  Room,
+  RoomController,
+} from "../../api/schemas/rooms";
+import { CircularLoadingIndicator } from "../CircularLoadingIndicator";
 
 interface TaskSelectStepACProps {
   room: Room;
