@@ -173,12 +173,9 @@ export const RoomDialog = (props: RoomDialogProps) => {
       roomAddMutation.mutateAsync(room).then(() => handleClose());
     // Editing
     else {
-      const nameUpdated =
-        room.name !== props.existingData.name ? room.name : undefined;
+      const nameUpdated = room.name !== props.existingData.name;
       const controllersUpdated =
-        room.controllers !== props.existingData.controllers
-          ? room.controllers
-          : undefined;
+        room.controllers !== props.existingData.controllers;
 
       if (nameUpdated || controllersUpdated)
         roomPatchMutation

@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
-import { Job, JobPost } from "./schemas/scheduler";
+import { Job, JobPatch, JobPost } from "./schemas/scheduler";
 
 const fetchAvailableTasks = (): Promise<string[]> => {
   return authenticated_api
@@ -50,6 +50,28 @@ export const useAddJob = (): UseMutationResult<
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (job: JobPost) => postJob(job),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["Jobs"] });
+    },
+  });
+};
+
+const patchJob = (jobId: string, jobData: JobPatch): Promise<Job> => {
+  return authenticated_api
+    .patch(`/scheduler/jobs/${jobId}`, jobData)
+    .then((response) => response.data);
+};
+
+export const usePatchJob = (): UseMutationResult<
+  Job,
+  AxiosError,
+  { jobId: string; jobData: JobPatch },
+  any
+> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { jobId: string; jobData: JobPatch }) =>
+      patchJob(data.jobId, data.jobData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["Jobs"] });
     },

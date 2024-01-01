@@ -1,4 +1,10 @@
 -------------------------------------------------------------
+Next version
+
+- Add button to pause/resume scheduled jobs
+- Add ability to edit scheduled jobs
+
+-------------------------------------------------------------
 v0.1.1
 
 - Use HttpOnly cookies for access & refresh token storage
