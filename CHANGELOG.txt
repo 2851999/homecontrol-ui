@@ -3,6 +3,7 @@ Next version
 
 - Add button to pause/resume scheduled jobs
 - Add ability to edit scheduled jobs
+- Upgrade packages
 
 -------------------------------------------------------------
 v0.1.1
