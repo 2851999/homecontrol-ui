@@ -7,6 +7,14 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
+import {
+  HueBridge,
+  HueBridgeDiscoverInfo,
+  HueBridgePost,
+  HueRoom,
+  HueRoomState,
+  HueRoomStatePatch,
+} from "./schemas/hue";
 
 const discoverHueBridges = (): Promise<HueBridgeDiscoverInfo[]> => {
   return authenticated_api

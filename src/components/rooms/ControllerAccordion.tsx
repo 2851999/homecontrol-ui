@@ -5,6 +5,7 @@ import DryIcon from "@mui/icons-material/Dry";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import EnergySavingsLeafIcon from "@mui/icons-material/EnergySavingsLeaf";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import {
@@ -13,6 +14,8 @@ import {
   AccordionSummary,
   Box,
   Card,
+  CardActionArea,
+  CardContent,
   Divider,
   FormControlLabel,
   FormGroup,
@@ -43,6 +46,7 @@ import {
   ACDeviceStateBase,
   ACDeviceStatePatch,
 } from "../../api/schemas/aircon";
+import { HueRoomSceneStatus, HueRoomStatePatch } from "../../api/schemas/hue";
 import {
   ControlType,
   ControllerAC,
@@ -50,7 +54,6 @@ import {
   ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 type TooltipToggleButtonProps = ToggleButtonProps & {
   TooltipProps: Omit<TooltipProps, "children">;
@@ -401,6 +404,38 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
             />
           </Box>
         )}
+        <Divider sx={{ my: 1 }} />
+        <Grid container spacing={1}>
+          {Object.keys(roomStateQuery.data.scenes).map((sceneId) => {
+            const scene = roomStateQuery.data.scenes[sceneId];
+
+            return (
+              <Grid item key={sceneId} xs={6} lg={4}>
+                <Card>
+                  <CardActionArea
+                    onClick={() => handleStateChange({ scene: sceneId })}
+                  >
+                    <CardContent
+                      sx={{
+                        textAlign: "center",
+                        backgroundColor:
+                          scene.status !== HueRoomSceneStatus.INACTIVE
+                            ? "success.main"
+                            : undefined,
+                        color:
+                          scene.status !== HueRoomSceneStatus.INACTIVE
+                            ? "success.contrastText"
+                            : undefined,
+                      }}
+                    >
+                      <Typography>{scene.name}</Typography>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            );
+          })}
+        </Grid>
         <Divider sx={{ my: 1 }} />
         <FormGroup>
           {Object.keys(roomStateQuery.data.lights).map((lightId) => {

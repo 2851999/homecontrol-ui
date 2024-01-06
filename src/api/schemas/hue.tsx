@@ -1,44 +1,44 @@
-interface HueBridgeDiscoverInfo {
+export interface HueBridgeDiscoverInfo {
   id: string;
   internalipaddress: string;
   port: number;
 }
 
-interface HueBridgePost {
+export interface HueBridgePost {
   name: string;
   discover_info: HueBridgeDiscoverInfo;
 }
 
-interface HueBridge {
+export interface HueBridge {
   id: string;
   name: string;
   ip_address: string;
   port: number;
 }
 
-interface HueRoomLight {
+export interface HueRoomLight {
   name: string;
 }
 
-interface HueRoom {
+export interface HueRoom {
   id: string;
   name: string;
   grouped_light_id: string;
   lights: { [key: string]: HueRoomLight };
 }
 
-interface HueColour {
+export interface HueColour {
   r: number;
   g: number;
   b: number;
 }
 
-interface HueRoomGroupedLightState {
+export interface HueRoomGroupedLightState {
   on: boolean | null;
   brightness: number | null;
 }
 
-interface HueRoomLightState {
+export interface HueRoomLightState {
   name: string;
   on: boolean;
 
@@ -47,29 +47,29 @@ interface HueRoomLightState {
   colour: HueColour | null;
 }
 
-enum HueRoomSceneStatus {
+export enum HueRoomSceneStatus {
   INACTIVE = "inactive",
   STATIC = "static",
   DYNAMIC_PALETTE = "dynamic_palette",
 }
 
-interface HueRoomSceneState {
+export interface HueRoomSceneState {
   name: string;
   status: HueRoomSceneStatus;
 }
 
-interface HueRoomState {
+export interface HueRoomState {
   grouped_light: HueRoomGroupedLightState;
   lights: { [key: string]: HueRoomLightState };
   scenes: { [key: string]: HueRoomSceneState };
 }
 
-interface HueRoomGroupedLightStatePatch {
+export interface HueRoomGroupedLightStatePatch {
   on?: boolean;
   brightness?: number;
 }
 
-interface HueRoomLightStatePatch {
+export interface HueRoomLightStatePatch {
   name?: string;
   on?: boolean;
 
@@ -78,7 +78,8 @@ interface HueRoomLightStatePatch {
   colour?: HueColour;
 }
 
-interface HueRoomStatePatch {
+export interface HueRoomStatePatch {
   grouped_light?: HueRoomGroupedLightStatePatch;
   lights?: { [key: string]: HueRoomLightStatePatch };
+  scene?: string;
 }
