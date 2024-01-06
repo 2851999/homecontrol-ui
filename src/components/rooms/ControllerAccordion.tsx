@@ -410,7 +410,7 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
             const scene = roomStateQuery.data.scenes[sceneId];
 
             return (
-              <Grid item key={sceneId} xs={6} lg={4}>
+              <Grid item key={sceneId} xs={4}>
                 <Card>
                   <CardActionArea
                     onClick={() => handleStateChange({ scene: sceneId })}

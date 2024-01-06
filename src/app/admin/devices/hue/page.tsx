@@ -30,6 +30,7 @@ import {
   useHueBridges,
   useRegisterHueBridge,
 } from "../../../../api/hue";
+import { HueBridge, HueBridgeDiscoverInfo } from "../../../../api/schemas/hue";
 import { CircularLoadingIndicator } from "../../../../components/CircularLoadingIndicator";
 import { LoadingPage } from "../../../../components/LoadingPage";
 
