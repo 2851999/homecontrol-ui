@@ -3,6 +3,7 @@ Next version
 
 - Add button to pause/resume scheduled jobs
 - Add ability to edit scheduled jobs
+- Add scenes to HueRoom controllers
 - Upgrade packages
 
 -------------------------------------------------------------
