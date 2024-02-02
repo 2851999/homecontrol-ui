@@ -5,6 +5,6 @@ services:
     build: .
     working_dir: /homecontrol-ui
     volumes:
-      - ./:/homecontrol-ui
+      - ./src:/homecontrol-ui/src
     ports:
       - "3000:3000"
