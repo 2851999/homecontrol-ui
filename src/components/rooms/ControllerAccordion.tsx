@@ -54,6 +54,8 @@ import {
   ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
+import { AuthenticatedComponent } from "../Authenticated";
+import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 
 type TooltipToggleButtonProps = ToggleButtonProps & {
   TooltipProps: Omit<TooltipProps, "children">;
@@ -94,7 +96,8 @@ const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
     deviceStateMutation.mutate({
       ...(deviceStateQuery.data as ACDeviceStateBase),
       ...newData,
-      prompt_tone: false,
+      prompt_tone:
+        newData.prompt_tone !== undefined ? newData.prompt_tone : false,
     });
   };
 
@@ -112,10 +115,18 @@ const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
       </AccordionSummary>
       <AccordionDetails>
         <Grid container direction="column" alignItems="center" spacing={2}>
-          <Grid item>
+          <Grid item sx={{ display: "inline-flex", alignItems: "center" }}>
             <Typography variant="h6">
               {deviceStateQuery.data.target_temperature}&deg;C
             </Typography>
+            <AuthenticatedComponent adminOnly>
+              <IconButton
+                sx={{ position: "absolute", right: "8px" }}
+                onClick={() => handleStateChange({ prompt_tone: true })}
+              >
+                <VolumeUpIcon />
+              </IconButton>
+            </AuthenticatedComponent>
           </Grid>
           <Grid item width="100%">
             <Slider

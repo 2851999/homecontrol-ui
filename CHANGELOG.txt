@@ -1,6 +1,7 @@
 -------------------------------------------------------------
 Next version
 
+- Add admin only button to make AC units beep
 - Upgrade packages
 
 -------------------------------------------------------------
