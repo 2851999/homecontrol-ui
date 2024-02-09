@@ -2,6 +2,7 @@
 Next version
 
 - Add admin only button to make AC units beep
+- Fix requests repeating on token refresh
 - Upgrade packages
 
 -------------------------------------------------------------

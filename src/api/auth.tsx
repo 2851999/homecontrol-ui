@@ -90,7 +90,8 @@ authenticated_api.interceptors.response.use(
 
           // Re-run any saved requests with the new token
           isFetchingAccessToken = false;
-          accessTokenSubscribers.filter((callback) => callback());
+          accessTokenSubscribers.forEach((callback) => callback());
+          accessTokenSubscribers = [];
 
           // Retry
           return axios(originalRequest);
@@ -109,9 +110,9 @@ authenticated_api.interceptors.response.use(
       } else {
         // Require refresh but another request is already performing - add to a
         // list to be resolved later once the new token is obtained
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
           accessTokenSubscribers.push((error?: AxiosError) => {
-            if (error !== undefined) resolve(Promise.reject(error));
+            if (error !== undefined) reject(error);
             else {
               resolve(axios(originalRequest));
             }
