@@ -32,7 +32,7 @@ export const RoomTemperatureGraph = (props: RoomTemperatureGraphProps) => {
               }[]
             }
             xAxis={[{ dataKey: "timestamp", scaleType: "time" }]}
-            series={[{ dataKey: "value", area: true }]}
+            series={[{ dataKey: "value", area: true, showMark: false }]}
             height={400}
           />
         )}
