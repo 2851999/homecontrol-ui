@@ -21,6 +21,7 @@ import {
   GridActionsCellItem,
   GridColDef,
   GridRowParams,
+  GridSlots,
   GridToolbarContainer,
 } from "@mui/x-data-grid";
 import { useEffect, useMemo, useState } from "react";
@@ -335,8 +336,8 @@ export default function HuePage() {
       setRows(bridgesQuery.data);
   }, [bridgesQuery.isLoading, bridgesQuery.data]);
 
-  const handleDeleteClicked = async (params: GridRowParams) => {
-    await deviceDeleteMutation.mutate(params.id as string);
+  const handleDeleteClicked = (params: GridRowParams) => {
+    deviceDeleteMutation.mutate(params.id as string);
   };
 
   const devicesTableColumns: GridColDef[] = [
@@ -367,7 +368,7 @@ export default function HuePage() {
     <DataGrid
       rows={rows}
       columns={devicesTableColumns}
-      slots={{ toolbar: Toolbar }}
+      slots={{ toolbar: Toolbar as GridSlots["toolbar"] }}
       slotProps={{ toolbar: { currentBridges: bridgesQuery.data } }}
       autoHeight
     />
