@@ -1,6 +1,9 @@
 -------------------------------------------------------------
 Next version
 
+-------------------------------------------------------------
+v0.2.1
+
 - Add admin only button to make AC units beep
 - Fix requests repeating on token refresh
 - Don't show marks on monitoring page unless hovering
