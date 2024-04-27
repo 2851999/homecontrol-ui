@@ -8,6 +8,9 @@ RUN yarn workspaces focus --production
 
 COPY . .
 
+ARG NEXT_PUBLIC_HOMECONTROL_API_URL
+ENV NEXT_PUBLIC_HOMECONTROL_API_URL=${NEXT_PUBLIC_HOMECONTROL_API_URL}
+
 RUN yarn build
 
 CMD ["yarn", "start"]
