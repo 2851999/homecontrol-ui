@@ -13,25 +13,25 @@
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.15",
     "@mui/material": "^5.15.15",
-    "@mui/x-charts": "^7.2.0",
-    "@mui/x-data-grid": "^7.2.0",
-    "@mui/x-date-pickers": "^7.2.0",
+    "@mui/x-charts": "^7.3.1",
+    "@mui/x-data-grid": "^7.3.1",
+    "@mui/x-date-pickers": "^7.3.1",
     "@reduxjs/toolkit": "^2.2.3",
-    "@tanstack/react-query": "^5.29.2",
+    "@tanstack/react-query": "^5.32.0",
     "@types/node": "^20.12.7",
-    "@types/react": "^18.2.77",
-    "@types/react-dom": "^18.2.25",
+    "@types/react": "^18.3.1",
+    "@types/react-dom": "^18.3.0",
     "axios": "^1.6.8",
     "dayjs": "^1.11.10",
-    "next": "14.2.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-redux": "^9.1.0",
+    "next": "14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-redux": "^9.1.1",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.1"
+    "eslint-config-next": "14.2.3"
   },
   "packageManager": "yarn@4.1.0"
 }
