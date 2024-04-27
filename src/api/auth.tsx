@@ -9,6 +9,7 @@ import {
 } from "@tanstack/react-query";
 import axios, { AxiosError, isAxiosError } from "axios";
 import { setLoggedIn } from "../authentication";
+import { fetchConfig } from "../config";
 import { homecontrol_api } from "./api";
 import {
   LoginPost,
@@ -48,11 +49,15 @@ export const postLogin = (login_data: LoginPost): Promise<UserSession> => {
 };
 
 /**
- * Intercept on requests to add the access token to the header
+ * Intercept on requests to assign the base url and add the  access token to the header
  */
 authenticated_api.interceptors.request.use(
-  (axiosConfig) => {
+  async (axiosConfig) => {
+    const config = await fetchConfig();
+
+    axiosConfig.baseURL = config?.homecontrol_api_url;
     axiosConfig.withCredentials = true;
+
     return axiosConfig;
   },
   (error) => Promise.reject(error)
@@ -100,9 +105,10 @@ authenticated_api.interceptors.response.use(
           if (isAxiosError(error) && error.response?.status == 401) {
             // Refresh token expired so remove login and go back to login page
             setLoggedIn(false);
-            accessTokenSubscribers.filter((callback) =>
+            accessTokenSubscribers.forEach((callback) =>
               callback(error as AxiosError)
             );
+            accessTokenSubscribers = [];
             window.location.href = "/login";
           }
           return Promise.reject(error);
