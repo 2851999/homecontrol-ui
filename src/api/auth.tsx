@@ -9,7 +9,8 @@ import {
 } from "@tanstack/react-query";
 import axios, { AxiosError, isAxiosError } from "axios";
 import { setLoggedIn } from "../authentication";
-import { BASE_URL } from "./api";
+import { fetchConfig } from "../config";
+import { homecontrol_api } from "./api";
 import {
   LoginPost,
   User,
@@ -19,9 +20,7 @@ import {
 } from "./schemas/auth";
 
 /* Authenticated API that will have intercepts added to handle authentication */
-export const authenticated_api = axios.create({
-  baseURL: BASE_URL,
-});
+export const authenticated_api = axios.create();
 
 /**
  * Creates a user
@@ -30,8 +29,8 @@ export const authenticated_api = axios.create({
  * @returns
  */
 export const postUser = (user: UserPost): Promise<User> => {
-  return axios
-    .post(`${BASE_URL}/auth/user`, user)
+  return homecontrol_api
+    .post(`/auth/user`, user)
     .then((response) => response.data);
 };
 
@@ -42,18 +41,22 @@ export const postUser = (user: UserPost): Promise<User> => {
  * @returns
  */
 export const postLogin = (login_data: LoginPost): Promise<UserSession> => {
-  return axios
-    .post(`${BASE_URL}/auth/login`, login_data, { withCredentials: true })
+  return homecontrol_api
+    .post(`/auth/login`, login_data, { withCredentials: true })
     .then((response) => response.data);
 };
 
 /**
- * Intercept on requests to add the access token to the header
+ * Intercept on requests to assign the base url and add the  access token to the header
  */
 authenticated_api.interceptors.request.use(
-  (config) => {
-    config.withCredentials = true;
-    return config;
+  async (axiosConfig) => {
+    const config = await fetchConfig();
+
+    axiosConfig.baseURL = config?.homecontrol_api_url;
+    axiosConfig.withCredentials = true;
+
+    return axiosConfig;
   },
   (error) => Promise.reject(error)
 );
@@ -82,8 +85,8 @@ authenticated_api.interceptors.response.use(
 
         try {
           // Attempt to refresh the user session
-          await axios
-            .post(`${BASE_URL}/auth/refresh`, undefined, {
+          await homecontrol_api
+            .post(`/auth/refresh`, undefined, {
               withCredentials: true,
             })
             .then((response) => response.data);
@@ -100,9 +103,10 @@ authenticated_api.interceptors.response.use(
           if (isAxiosError(error) && error.response?.status == 401) {
             // Refresh token expired so remove login and go back to login page
             setLoggedIn(false);
-            accessTokenSubscribers.filter((callback) =>
+            accessTokenSubscribers.forEach((callback) =>
               callback(error as AxiosError)
             );
+            accessTokenSubscribers = [];
             window.location.href = "/login";
           }
           return Promise.reject(error);

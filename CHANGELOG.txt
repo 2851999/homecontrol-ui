@@ -1,6 +1,8 @@
 -------------------------------------------------------------
 Next version
 
+- Add config.json in public folder to configure
+  homecontrol-api url
 - Upgrade packages
 
 -------------------------------------------------------------
