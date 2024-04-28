@@ -20,9 +20,7 @@ import {
 } from "./schemas/auth";
 
 /* Authenticated API that will have intercepts added to handle authentication */
-export const authenticated_api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_HOMECONTROL_API_URL,
-});
+export const authenticated_api = axios.create();
 
 /**
  * Creates a user
