@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
   LinearProgress,
   List,
   ListItem,
@@ -22,6 +23,23 @@ import {
   ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
+import React from "react";
+
+interface AdminControllerPropertyProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+const AdminControllerProperty = (props: AdminControllerPropertyProps) => {
+  return (
+    <Typography sx={{ display: "flex" }}>
+      {props.label}:
+      <Typography color="text.secondary" sx={{ pl: 1 }}>
+        {props.children}
+      </Typography>
+    </Typography>
+  );
+};
 
 interface AdminControllerAccordionACProps {
   controller: ControllerAC;
@@ -37,8 +55,12 @@ const AdminControllerAccordionAC = (props: AdminControllerAccordionACProps) => {
         Air Conditioning - {deviceQuery.data.name}
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>ID: {deviceQuery.data.id}</Typography>
-        <Typography>Name: {deviceQuery.data.name}</Typography>
+        <AdminControllerProperty label="ID">
+          {deviceQuery.data.id}
+        </AdminControllerProperty>
+        <AdminControllerProperty label="Name">
+          {deviceQuery.data.name}
+        </AdminControllerProperty>
       </AccordionDetails>
     </Accordion>
   );
@@ -66,8 +88,12 @@ const AdminControllerAccordionBroadlink = (
         Broadlink - {deviceQuery.data.name}
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>ID: {deviceQuery.data.id}</Typography>
-        <Typography>Name: {deviceQuery.data.name}</Typography>
+        <AdminControllerProperty label="ID">
+          {deviceQuery.data.id}
+        </AdminControllerProperty>
+        <AdminControllerProperty label="Name">
+          {deviceQuery.data.name}
+        </AdminControllerProperty>
         <Typography variant="h5" sx={{ paddingTop: 2 }}>
           Actions
         </Typography>
@@ -107,11 +133,21 @@ const AdminControllerAccordionHueRoom = (
         Hue Room - {roomQuery.data.name}
       </AccordionSummary>
       <AccordionDetails>
-        <Typography>ID: {props.controller.id}</Typography>
-        <Typography>Bridge ID: {bridgeQuery.data.id}</Typography>
-        <Typography>Bridge Name: {bridgeQuery.data.name}</Typography>
-        <Typography>Room ID: {roomQuery.data.id}</Typography>
-        <Typography>Room Name: {roomQuery.data.name}</Typography>
+        <AdminControllerProperty label="ID">
+          {props.controller.id}
+        </AdminControllerProperty>
+        <AdminControllerProperty label="Bridge ID">
+          {bridgeQuery.data.id}
+        </AdminControllerProperty>
+        <AdminControllerProperty label="Bridge Name">
+          {bridgeQuery.data.name}
+        </AdminControllerProperty>
+        <AdminControllerProperty label="Room ID">
+          {roomQuery.data.id}
+        </AdminControllerProperty>
+        <AdminControllerProperty label="Room Name">
+          {roomQuery.data.name}
+        </AdminControllerProperty>
       </AccordionDetails>
     </Accordion>
   );
