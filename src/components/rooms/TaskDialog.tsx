@@ -3,12 +3,14 @@
 import {
   Box,
   Button,
+  Card,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
   InputLabel,
+  LinearProgress,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -17,7 +19,11 @@ import {
   Stepper,
 } from "@mui/material";
 import { useState } from "react";
-import { useACDevices } from "../../api/aircon";
+import {
+  useACDeviceState,
+  useACDevices,
+  useEditACDeviceState,
+} from "../../api/aircon";
 import {
   useBroadlinkActionsByIds,
   useBroadlinkDevices,
@@ -37,6 +43,7 @@ import {
   RoomController,
 } from "../../api/schemas/rooms";
 import { CircularLoadingIndicator } from "../CircularLoadingIndicator";
+import { ACController } from "../devices/ACController";
 
 interface TaskSelectStepACProps {
   room: Room;
@@ -57,6 +64,12 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
     },
     []
   );
+
+  // Current device state
+  const deviceStateQuery = useACDeviceState(props.task.device_id);
+
+  // Mutations
+  const deviceStateMutation = useEditACDeviceState(props.task.device_id);
 
   return devicesQuery.isLoading || devicesQuery.data === undefined ? (
     <CircularLoadingIndicator />
@@ -83,6 +96,20 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
             </MenuItem>
           ))}
       </Select>
+      {props.task.device_id !== "" ? (
+        deviceStateQuery.isLoading || deviceStateQuery.data === undefined ? (
+          <LinearProgress />
+        ) : (
+          <Box marginTop={2}>
+            <ACController
+              deviceState={deviceStateQuery.data}
+              onChangeDeviceState={(deviceState) =>
+                deviceStateMutation.mutate(deviceState)
+              }
+            />
+          </Box>
+        )
+      ) : null}
     </FormControl>
   );
 };

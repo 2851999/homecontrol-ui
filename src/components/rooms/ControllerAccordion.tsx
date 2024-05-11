@@ -1,13 +1,5 @@
-import AcUnitIcon from "@mui/icons-material/AcUnit";
-import AirIcon from "@mui/icons-material/Air";
-import AutoModeIcon from "@mui/icons-material/AutoMode";
-import DryIcon from "@mui/icons-material/Dry";
-import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
-import EnergySavingsLeafIcon from "@mui/icons-material/EnergySavingsLeaf";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
-import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
-import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import {
   Accordion,
   AccordionDetails,
@@ -24,15 +16,10 @@ import {
   LinearProgress,
   Slider,
   Switch,
-  ToggleButton,
-  ToggleButtonGroup,
-  ToggleButtonProps,
-  Tooltip,
-  TooltipProps,
   Typography,
   useTheme,
 } from "@mui/material";
-import React, { forwardRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useACDeviceState, useEditACDeviceState } from "../../api/aircon";
 import {
   useBroadlinkActionsByIds,
@@ -40,12 +27,6 @@ import {
   usePlaybackBroadlinkAction,
 } from "../../api/broadlink";
 import { useEditRoomState, useHueRoomState } from "../../api/hue";
-import {
-  ACDeviceFanSpeed,
-  ACDeviceMode,
-  ACDeviceStateBase,
-  ACDeviceStatePatch,
-} from "../../api/schemas/aircon";
 import { HueRoomSceneStatus, HueRoomStatePatch } from "../../api/schemas/hue";
 import {
   ControlType,
@@ -54,23 +35,7 @@ import {
   ControllerHueRoom,
   RoomController,
 } from "../../api/schemas/rooms";
-import { AuthenticatedComponent } from "../Authenticated";
-import VolumeUpIcon from "@mui/icons-material/VolumeUp";
-
-type TooltipToggleButtonProps = ToggleButtonProps & {
-  TooltipProps: Omit<TooltipProps, "children">;
-};
-
-export const TooltipToggleButton: React.FC<TooltipToggleButtonProps> =
-  // eslint-disable-next-line react/display-name
-  forwardRef(({ TooltipProps, ...props }, ref) => {
-    return (
-      <Tooltip {...TooltipProps}>
-        <ToggleButton ref={ref} {...props} />
-      </Tooltip>
-    );
-    // https://github.com/mui/material-ui/issues/32420
-  }) as React.FC<TooltipToggleButtonProps>;
+import { ACController } from "../devices/ACController";
 
 interface ControllerAccordionACProps {
   controller: ControllerAC;
@@ -90,15 +55,6 @@ const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
     ? "success.contrastText"
     : "text.primary";
 
-  const handleStateChange = (newData: ACDeviceStatePatch) => {
-    deviceStateMutation.mutate({
-      ...(deviceStateQuery.data as ACDeviceStateBase),
-      ...newData,
-      prompt_tone:
-        newData.prompt_tone !== undefined ? newData.prompt_tone : false,
-    });
-  };
-
   return deviceStateQuery.isLoading || deviceStateQuery.data === undefined ? (
     <LinearProgress />
   ) : (
@@ -112,159 +68,12 @@ const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
         <Typography color={textColour}>Air Conditioning</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Grid container direction="column" alignItems="center" spacing={2}>
-          <Grid item sx={{ display: "inline-flex", alignItems: "center" }}>
-            <Typography variant="h6">
-              {deviceStateQuery.data.target_temperature}&deg;C
-            </Typography>
-            <AuthenticatedComponent adminOnly>
-              <IconButton
-                sx={{ position: "absolute", right: "8px" }}
-                onClick={() => handleStateChange({ prompt_tone: true })}
-              >
-                <VolumeUpIcon />
-              </IconButton>
-            </AuthenticatedComponent>
-          </Grid>
-          <Grid item width="100%">
-            <Slider
-              min={16}
-              max={30}
-              step={1}
-              defaultValue={deviceStateQuery.data.target_temperature}
-              marks
-              valueLabelDisplay="auto"
-              onChangeCommitted={(event, value) =>
-                handleStateChange({
-                  target_temperature: Array.isArray(value) ? value[0] : value,
-                })
-              }
-            />
-          </Grid>
-          <Grid item>
-            <ToggleButtonGroup
-              value={deviceStateQuery.data.operational_mode}
-              exclusive
-              onChange={(event, value: ACDeviceMode) => {
-                handleStateChange({ operational_mode: value });
-              }}
-            >
-              <TooltipToggleButton
-                TooltipProps={{ title: "Auto" }}
-                value={ACDeviceMode.AUTO}
-              >
-                <AutoModeIcon />
-              </TooltipToggleButton>
-
-              <TooltipToggleButton
-                TooltipProps={{ title: "Cool" }}
-                value={ACDeviceMode.COOL}
-              >
-                <AcUnitIcon />
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "Dry" }}
-                value={ACDeviceMode.DRY}
-              >
-                <DryIcon />
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "Heat" }}
-                value={ACDeviceMode.HEAT}
-              >
-                <WbSunnyIcon />
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "Fan" }}
-                value={ACDeviceMode.FAN}
-              >
-                <AirIcon />
-              </TooltipToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-          <Grid item>
-            <ToggleButtonGroup
-              value={deviceStateQuery.data.fan_speed}
-              exclusive
-              onChange={(event, value: ACDeviceFanSpeed) => {
-                handleStateChange({ fan_speed: value });
-              }}
-            >
-              <TooltipToggleButton
-                TooltipProps={{ title: "Auto" }}
-                value={ACDeviceFanSpeed.AUTO}
-              >
-                Auto
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "Silent" }}
-                value={ACDeviceFanSpeed.SILENT}
-              >
-                S
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "Low" }}
-                value={ACDeviceFanSpeed.LOW}
-              >
-                L
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "Medium" }}
-                value={ACDeviceFanSpeed.MEDIUM}
-              >
-                M
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "High" }}
-                value={ACDeviceFanSpeed.HIGH}
-              >
-                H
-              </TooltipToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-          <Grid item>
-            <ToggleButtonGroup
-              value={
-                deviceStateQuery.data.eco_mode
-                  ? "eco"
-                  : deviceStateQuery.data.turbo_mode
-                  ? "turbo"
-                  : "none"
-              }
-              exclusive
-              onChange={(event, value: "eco" | "turbo") => {
-                handleStateChange({
-                  eco_mode: value === "eco",
-                  turbo_mode: value === "turbo",
-                });
-              }}
-            >
-              <TooltipToggleButton TooltipProps={{ title: "Eco" }} value="eco">
-                <EnergySavingsLeafIcon />
-              </TooltipToggleButton>
-              <TooltipToggleButton
-                TooltipProps={{ title: "Turbo" }}
-                value="turbo"
-              >
-                <ElectricBoltIcon />
-              </TooltipToggleButton>
-            </ToggleButtonGroup>
-          </Grid>
-          <Grid item>
-            <Tooltip
-              title={`Power ${deviceStateQuery.data.power ? "off" : "on"}`}
-            >
-              <IconButton
-                color={deviceStateQuery.data.power ? "success" : "error"}
-                onClick={() =>
-                  handleStateChange({ power: !deviceStateQuery.data.power })
-                }
-              >
-                <PowerSettingsNewIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid>
-        </Grid>
+        <ACController
+          deviceState={deviceStateQuery.data}
+          onChangeDeviceState={(deviceState) =>
+            deviceStateMutation.mutate(deviceState)
+          }
+        />
       </AccordionDetails>
     </Accordion>
   );

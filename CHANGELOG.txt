@@ -3,6 +3,8 @@ Next version
 
 - Add config.json in public folder to configure
   homecontrol-api url
+- Add control of AC units when adding a room action with
+  an AC state task for easier setup
 - Change /admin/rooms to show controller values using
   secondary colour
 - Upgrade packages

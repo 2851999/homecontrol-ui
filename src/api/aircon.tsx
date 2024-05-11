@@ -96,6 +96,8 @@ export const useACDeviceState = (
   return useQuery<ACDeviceState, AxiosError>({
     queryKey: ["ACDeviceState", deviceId],
     queryFn: () => fetchACDeviceState(deviceId),
+    // Ignore here for room actions (see TaskSelectStepAC)
+    enabled: deviceId !== "",
   });
 };
 
