@@ -37,6 +37,7 @@ export interface RoomAction {
 export interface TaskACStatePost {
   task_type: TaskType.AC_STATE;
   device_id: string;
+  state: ACDeviceStatePut;
 }
 
 export type TaskPost = TaskACStatePost | TaskBroadlinkAction | TaskHueScene;
