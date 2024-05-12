@@ -1,4 +1,10 @@
 -------------------------------------------------------------
+Next version
+
+- Decouple AC device state from changes when creating room
+  actions
+
+-------------------------------------------------------------
 v0.3.0
 
 - Add config.json in public folder to configure

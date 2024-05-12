@@ -17,12 +17,8 @@ import {
   StepLabel,
   Stepper,
 } from "@mui/material";
-import { useState } from "react";
-import {
-  useACDeviceState,
-  useACDevices,
-  useEditACDeviceState,
-} from "../../api/aircon";
+import { useEffect, useState } from "react";
+import { useACDeviceState, useACDevices } from "../../api/aircon";
 import {
   useBroadlinkActionsByIds,
   useBroadlinkDevices,
@@ -36,6 +32,12 @@ import {
   TaskType,
 } from "../../api/schemas/actions";
 import {
+  ACDeviceFanSpeed,
+  ACDeviceMode,
+  ACDeviceStatePut,
+  ACDeviceSwingMode,
+} from "../../api/schemas/aircon";
+import {
   ControlType,
   ControllerHueRoom,
   Room,
@@ -43,6 +45,18 @@ import {
 } from "../../api/schemas/rooms";
 import { CircularLoadingIndicator } from "../CircularLoadingIndicator";
 import { ACController } from "../devices/ACController";
+
+const DEFAULT_AC_PUT: ACDeviceStatePut = {
+  power: false,
+  target_temperature: 17,
+  operational_mode: ACDeviceMode.AUTO,
+  fan_speed: ACDeviceFanSpeed.AUTO,
+  swing_mode: ACDeviceSwingMode.OFF,
+  eco_mode: false,
+  turbo_mode: false,
+  fahrenheit: false,
+  prompt_tone: false,
+};
 
 interface TaskSelectStepACProps {
   room: Room;
@@ -67,8 +81,20 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
   // Current device state
   const deviceStateQuery = useACDeviceState(props.task.device_id);
 
-  // Mutations
-  const deviceStateMutation = useEditACDeviceState(props.task.device_id);
+  // After loading the current state of the device use it as the starting point for the state selection
+  useEffect(() => {
+    if (!deviceStateQuery.isLoading && deviceStateQuery.data !== undefined) {
+      props.onTaskUpdated({
+        ...props.task,
+        state: {
+          ...deviceStateQuery.data,
+          prompt_tone: DEFAULT_AC_PUT.prompt_tone,
+        },
+      });
+    }
+    // Avoid recursion of props changing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deviceStateQuery.data, deviceStateQuery.isLoading]);
 
   return devicesQuery.isLoading || devicesQuery.data === undefined ? (
     <CircularLoadingIndicator />
@@ -84,6 +110,7 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
           props.onTaskUpdated({
             task_type: TaskType.AC_STATE,
             device_id: event.target.value as string,
+            state: DEFAULT_AC_PUT,
           })
         }
       >
@@ -101,10 +128,11 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
         ) : (
           <Box marginTop={2}>
             <ACController
-              deviceState={deviceStateQuery.data}
+              deviceState={{ ...deviceStateQuery.data, ...props.task.state }}
               onChangeDeviceState={(deviceState) =>
-                deviceStateMutation.mutate(deviceState)
+                props.onTaskUpdated({ ...props.task, state: deviceState })
               }
+              useInternalState={true}
             />
           </Box>
         )
@@ -290,7 +318,11 @@ export const TaskDialog = (props: TaskDialogProps) => {
 
     switch (newTaskType) {
       case TaskType.AC_STATE:
-        setTask({ task_type: newTaskType, device_id: "" });
+        setTask({
+          task_type: newTaskType,
+          device_id: "",
+          state: DEFAULT_AC_PUT,
+        });
         break;
       case TaskType.BROADLINK_ACTION:
         setTask({ task_type: newTaskType, device_id: "", action_id: "" });

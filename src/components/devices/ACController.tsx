@@ -5,6 +5,7 @@ import DryIcon from "@mui/icons-material/Dry";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import EnergySavingsLeafIcon from "@mui/icons-material/EnergySavingsLeaf";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
+import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import {
@@ -22,7 +23,6 @@ import { forwardRef } from "react";
 import {
   ACDeviceFanSpeed,
   ACDeviceMode,
-  ACDeviceState,
   ACDeviceStateBase,
   ACDeviceStatePatch,
   ACDeviceStatePut,
@@ -45,8 +45,14 @@ export const TooltipToggleButton: React.FC<TooltipToggleButtonProps> =
   }) as React.FC<TooltipToggleButtonProps>;
 
 interface ACControllerProps {
-  deviceState: ACDeviceState;
+  deviceState: ACDeviceStatePut;
   onChangeDeviceState: (deviceState: ACDeviceStatePut) => void;
+  // When true this
+  // - Turns the sound icon into a toggle for prompt_tone rather than always sending true to trigger a tone
+  // - Makes the slider use the actual value given to it rather than just using a default and allowing changes
+  //   (for an actual device using this approach would make it feel sluggish)
+  // sets it back to false
+  useInternalState?: boolean;
 }
 
 export const ACController = (props: ACControllerProps) => {
@@ -68,9 +74,19 @@ export const ACController = (props: ACControllerProps) => {
         <AuthenticatedComponent adminOnly>
           <IconButton
             sx={{ position: "absolute", right: "8px" }}
-            onClick={() => handleStateChange({ prompt_tone: true })}
+            onClick={() =>
+              handleStateChange({
+                prompt_tone: props.useInternalState
+                  ? !props.deviceState.prompt_tone
+                  : true,
+              })
+            }
           >
-            <VolumeUpIcon />
+            {props.useInternalState && props.deviceState.prompt_tone ? (
+              <VolumeUpIcon />
+            ) : (
+              <VolumeOffIcon />
+            )}
           </IconButton>
         </AuthenticatedComponent>
       </Grid>
@@ -79,7 +95,9 @@ export const ACController = (props: ACControllerProps) => {
           min={16}
           max={30}
           step={1}
-          defaultValue={props.deviceState.target_temperature}
+          {...(props.useInternalState
+            ? { value: props.deviceState.target_temperature }
+            : { defaultValue: props.deviceState.target_temperature })}
           marks
           valueLabelDisplay="auto"
           onChangeCommitted={(event, value) =>

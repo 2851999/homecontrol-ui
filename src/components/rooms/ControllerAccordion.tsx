@@ -69,7 +69,7 @@ const ControllerAccordionAC = (props: ControllerAccordionACProps) => {
       </AccordionSummary>
       <AccordionDetails>
         <ACController
-          deviceState={deviceStateQuery.data}
+          deviceState={{ ...deviceStateQuery.data, prompt_tone: false }}
           onChangeDeviceState={(deviceState) =>
             deviceStateMutation.mutate(deviceState)
           }
