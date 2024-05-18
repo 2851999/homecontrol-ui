@@ -9,19 +9,6 @@ import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
 import { Job, JobPatch, JobPost } from "./schemas/scheduler";
 
-const fetchAvailableTasks = (): Promise<string[]> => {
-  return authenticated_api
-    .get("/scheduler/available_tasks")
-    .then((response) => response.data);
-};
-
-export const useAvailableTasks = (): UseQueryResult<string[], AxiosError> => {
-  return useQuery<string[], AxiosError>({
-    queryKey: ["AvailableTasks"],
-    queryFn: fetchAvailableTasks,
-  });
-};
-
 const fetchJobs = (): Promise<Job[]> => {
   return authenticated_api
     .get("/scheduler/jobs")

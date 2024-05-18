@@ -1,6 +1,6 @@
 "use client";
 
-import { useAddJob, useAvailableTasks, usePatchJob } from "../api/scheduler";
+import { useAddJob, usePatchJob } from "../api/scheduler";
 
 import {
   Box,
@@ -19,10 +19,101 @@ import {
   TextField,
 } from "@mui/material";
 import { MobileDateTimePicker } from "@mui/x-date-pickers";
-import { CircularLoadingIndicator } from "./CircularLoadingIndicator";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { Job, JobPost, TimeDelta, TriggerType } from "../api/schemas/scheduler";
+import { useRoomActions } from "../api/actions";
+import { useRooms } from "../api/rooms";
+import {
+  Job,
+  JobPost,
+  TaskExecuteRoomAction,
+  TaskType,
+  TimeDelta,
+  TriggerType,
+} from "../api/schemas/scheduler";
+import { CircularLoadingIndicator } from "./CircularLoadingIndicator";
+
+interface TaskError {
+  room: string | undefined;
+  action: string | undefined;
+}
+
+interface ExecuteRoomActionTaskForm {
+  task: TaskExecuteRoomAction;
+  taskError: TaskError;
+  setTaskError: (taskError: TaskError) => void;
+  onTaskUpdated: (newTask: TaskExecuteRoomAction) => void;
+}
+
+const ExecuteRoomActionTaskForm = (props: ExecuteRoomActionTaskForm) => {
+  const roomsQuery = useRooms();
+  const roomActionsQuery = useRoomActions();
+
+  return roomsQuery.isLoading ||
+    roomsQuery.data === undefined ||
+    roomActionsQuery.isLoading ||
+    roomActionsQuery.data === undefined ? (
+    <CircularLoadingIndicator />
+  ) : (
+    <>
+      <FormControl fullWidth required>
+        <InputLabel id="room-select-label">Room</InputLabel>
+        <Select
+          labelId="room-select-label"
+          id="room-select"
+          label="Room"
+          value={props.task.room_id}
+          onChange={(event) => {
+            props.onTaskUpdated({
+              ...props.task,
+              room_id: event.target.value,
+              action_id: "",
+            });
+            props.setTaskError({ ...props.taskError, room: undefined });
+          }}
+          error={!!props.taskError.room}
+        >
+          {roomsQuery.data.map((room) => (
+            <MenuItem key={room.id} value={room.id}>
+              {room.name}
+            </MenuItem>
+          ))}
+        </Select>
+        {!!props.taskError.room && (
+          <FormHelperText error>{props.taskError.room}</FormHelperText>
+        )}
+      </FormControl>
+      <FormControl fullWidth sx={{ marginTop: 2 }} required>
+        <InputLabel id="action-select-label">Action</InputLabel>
+        <Select
+          labelId="action-select-label"
+          id="action-select"
+          label="Action"
+          value={props.task.action_id}
+          onChange={(event) => {
+            props.onTaskUpdated({
+              ...props.task,
+              action_id: event.target.value,
+            });
+            props.setTaskError({ ...props.taskError, action: undefined });
+          }}
+          error={!!props.taskError.action}
+        >
+          {roomActionsQuery.data
+            .filter((action) => action.room_id === props.task.room_id)
+            .map((action) => (
+              <MenuItem key={action.id} value={action.id}>
+                {action.name}
+              </MenuItem>
+            ))}
+        </Select>
+        {!!props.taskError.action && (
+          <FormHelperText error>{props.taskError.action}</FormHelperText>
+        )}
+      </FormControl>
+    </>
+  );
+};
 
 interface JobDialogProps {
   renderButton?: (onClick: () => void) => void;
@@ -34,9 +125,6 @@ interface JobDialogProps {
 }
 
 export const JobDialogue = (props: JobDialogProps) => {
-  // Available tasks
-  const availableTasksQuery = useAvailableTasks();
-
   // Mutations
   const jobAddMutation = useAddJob();
   const jobPatchMutation = usePatchJob();
@@ -46,11 +134,14 @@ export const JobDialogue = (props: JobDialogProps) => {
 
   const [data, setData] = useState<JobPost>({
     name: "",
-    task: "",
+    task: { task_type: TaskType.RECORD_ALL_TEMPERATURES },
     trigger: { trigger_type: TriggerType.CRON, value: "" },
   });
   const [nameError, setNameError] = useState<string | undefined>(undefined);
-  const [taskError, setTaskError] = useState<string | undefined>(undefined);
+  const [taskError, setTaskError] = useState<TaskError>({
+    room: undefined,
+    action: undefined,
+  });
   const [crontabError, setCrontabError] = useState<string | undefined>(
     undefined
   );
@@ -70,9 +161,18 @@ export const JobDialogue = (props: JobDialogProps) => {
       setNameError("Name cannot be empty");
       error = true;
     }
-    if (!!!data.task) {
-      setTaskError("Task cannot be empty");
-      error = true;
+    switch (data.task.task_type) {
+      case TaskType.EXECUTE_ROOM_ACTION:
+        if (!!!data.task.room_id)
+          setTaskError((taskError) => ({
+            ...taskError,
+            room: "Room cannot be empty",
+          }));
+        if (!!!data.task.action_id)
+          setTaskError((taskError) => ({
+            ...taskError,
+            action: "Action cannot be empty",
+          }));
     }
     if (data.trigger.trigger_type === TriggerType.CRON) {
       if (!!!data.trigger.value) {
@@ -88,7 +188,6 @@ export const JobDialogue = (props: JobDialogProps) => {
 
   const handleChangeData = (newData: JobPost) => {
     if (newData.name !== data.name && !!nameError) setNameError(undefined);
-    if (newData.task !== data.task && !!taskError) setTaskError(undefined);
 
     setData(newData);
   };
@@ -99,11 +198,11 @@ export const JobDialogue = (props: JobDialogProps) => {
     else if (props.onClose !== undefined) props.onClose();
     setData({
       name: "",
-      task: "",
+      task: { task_type: TaskType.RECORD_ALL_TEMPERATURES },
       trigger: { trigger_type: TriggerType.CRON, value: "" },
     });
     setNameError(undefined);
-    setTaskError(undefined);
+    setTaskError({ room: undefined, action: undefined });
     setCrontabError(undefined);
     setOtherError(false);
   };
@@ -138,6 +237,25 @@ export const JobDialogue = (props: JobDialogProps) => {
     }
   };
 
+  const handleChangeTaskType = (event: SelectChangeEvent<TaskType>) => {
+    const newTaskType = event.target.value;
+
+    // Reset task specific errors
+    setTaskError({ room: undefined, action: undefined });
+
+    switch (newTaskType) {
+      case TaskType.RECORD_ALL_TEMPERATURES:
+        setData({ ...data, task: { task_type: newTaskType } });
+        break;
+      case TaskType.EXECUTE_ROOM_ACTION:
+        setData({
+          ...data,
+          task: { task_type: newTaskType, room_id: "", action_id: "" },
+        });
+        break;
+    }
+  };
+
   const handleChangeTriggerType = (event: SelectChangeEvent<TriggerType>) => {
     const newTriggerType = event.target.value;
 
@@ -166,6 +284,26 @@ export const JobDialogue = (props: JobDialogProps) => {
           trigger: { trigger_type: newTriggerType, value: "" },
         });
         break;
+    }
+  };
+
+  const getTaskInput = () => {
+    switch (data.task.task_type) {
+      case TaskType.RECORD_ALL_TEMPERATURES:
+        return null;
+      case TaskType.EXECUTE_ROOM_ACTION:
+        return (
+          <Grid item>
+            <ExecuteRoomActionTaskForm
+              task={data.task}
+              taskError={taskError}
+              setTaskError={setTaskError}
+              onTaskUpdated={(newTask: TaskExecuteRoomAction) =>
+                setData({ ...data, task: newTask })
+              }
+            />
+          </Grid>
+        );
     }
   };
 
@@ -199,6 +337,7 @@ export const JobDialogue = (props: JobDialogProps) => {
                   <TextField
                     label="Weeks"
                     value={data.trigger.value.weeks}
+                    required
                     type="number"
                     onChange={(event) =>
                       handleChangeData({
@@ -219,6 +358,7 @@ export const JobDialogue = (props: JobDialogProps) => {
                   <TextField
                     label="Days"
                     value={data.trigger.value.days}
+                    required
                     type="number"
                     onChange={(event) =>
                       handleChangeData({
@@ -239,6 +379,7 @@ export const JobDialogue = (props: JobDialogProps) => {
                   <TextField
                     label="Hours"
                     value={data.trigger.value.hours}
+                    required
                     type="number"
                     onChange={(event) =>
                       handleChangeData({
@@ -260,6 +401,7 @@ export const JobDialogue = (props: JobDialogProps) => {
                   <TextField
                     label="Minutes"
                     value={data.trigger.value.minutes}
+                    required
                     type="number"
                     onChange={(event) =>
                       handleChangeData({
@@ -280,6 +422,7 @@ export const JobDialogue = (props: JobDialogProps) => {
                   <TextField
                     label="Seconds"
                     value={data.trigger.value.seconds}
+                    required
                     type="number"
                     onChange={(event) =>
                       handleChangeData({
@@ -306,6 +449,7 @@ export const JobDialogue = (props: JobDialogProps) => {
             <TextField
               label="Crontab"
               value={data.trigger.value}
+              required
               onChange={(event) =>
                 handleChangeData({
                   ...data,
@@ -336,13 +480,14 @@ export const JobDialogue = (props: JobDialogProps) => {
         maxWidth="md"
         fullWidth
       >
-        <DialogTitle>Add Job</DialogTitle>
+        <DialogTitle>{props.existingData ? "Edit Job" : "Add Job"}</DialogTitle>
         <DialogContent>
           <Grid container direction="column" spacing={2} sx={{ paddingTop: 1 }}>
             <Grid item>
               <TextField
                 label="Name"
                 value={data.name}
+                required
                 onChange={(event) =>
                   handleChangeData({ ...data, name: event.target.value })
                 }
@@ -352,39 +497,29 @@ export const JobDialogue = (props: JobDialogProps) => {
               />
             </Grid>
             <Grid item>
-              {availableTasksQuery.isLoading ||
-              availableTasksQuery.data === undefined ? (
-                <CircularLoadingIndicator />
-              ) : (
-                <FormControl fullWidth>
-                  <InputLabel id="task-select-label">Task</InputLabel>
-                  <Select
-                    labelId="task-select-label"
-                    id="task-select"
-                    label="Task"
-                    value={data.task}
-                    onChange={(event) =>
-                      handleChangeData({
-                        ...data,
-                        task: event.target.value as string,
-                      })
-                    }
-                    error={!!taskError}
-                  >
-                    {availableTasksQuery.data.map((task) => (
-                      <MenuItem key={task} value={task}>
-                        {task}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  {!!taskError && (
-                    <FormHelperText error>{taskError}</FormHelperText>
-                  )}
-                </FormControl>
-              )}
+              <FormControl required fullWidth>
+                <InputLabel id="task-select-label">Task</InputLabel>
+                <Select
+                  labelId="task-select-label"
+                  id="task-select"
+                  label="Task"
+                  value={data.task.task_type}
+                  onChange={handleChangeTaskType}
+                >
+                  {Object.keys(TaskType).map((type) => (
+                    <MenuItem
+                      key={type}
+                      value={TaskType[type as keyof typeof TaskType]}
+                    >
+                      {type}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
+            {getTaskInput()}
             <Grid item>
-              <FormControl fullWidth>
+              <FormControl required fullWidth>
                 <InputLabel id="trigger-type-select-label">
                   Trigger Type
                 </InputLabel>
