@@ -82,7 +82,7 @@ export const ACController = (props: ACControllerProps) => {
               })
             }
           >
-            {props.useInternalState && props.deviceState.prompt_tone ? (
+            {!props.useInternalState || props.deviceState.prompt_tone ? (
               <VolumeUpIcon />
             ) : (
               <VolumeOffIcon />
