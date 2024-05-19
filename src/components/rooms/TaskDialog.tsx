@@ -102,8 +102,8 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
     <FormControl fullWidth>
       <InputLabel id="device-select-label">AC Device</InputLabel>
       <Select
-        labelId="type-select-label"
-        id="type-select"
+        labelId="device-select-label"
+        id="device-select"
         label="AC Device"
         value={props.task.device_id}
         onChange={(event) =>
