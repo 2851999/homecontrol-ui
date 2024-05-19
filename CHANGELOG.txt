@@ -1,11 +1,12 @@
 -------------------------------------------------------------
-Next version
+v0.4.0
 
 - Decouple AC device state from changes when creating room
   actions
 - Added ability to schedule room actions
 - Mark fields as requited on add job dialogue
 - Fix edit job dialogue title being add
+- Run with homecontrol-api v0.5.0
 
 -------------------------------------------------------------
 v0.3.0
