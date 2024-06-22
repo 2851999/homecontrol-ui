@@ -89,9 +89,9 @@ export const RoomActionDialog = (props: RoomActionDialogProps) => {
       case 1:
         return (
           <>
-            {action.tasks.map((task, index) => (
+            {action.tasks.map((task, taskIndex) => (
               <Card
-                key={`${task.task_type}-${index}`}
+                key={`${task.task_type}-${taskIndex}`}
                 sx={{
                   display: "flex",
                   paddingX: 1,
@@ -112,6 +112,16 @@ export const RoomActionDialog = (props: RoomActionDialogProps) => {
                     setAction({
                       ...action,
                       tasks: [...action.tasks, task],
+                    })
+                  }
+                  editTask={(newTask: TaskPost) =>
+                    setAction({
+                      ...action,
+                      tasks: [
+                        ...action.tasks.map((currentTask, currentTaskIndex) =>
+                          currentTaskIndex === taskIndex ? newTask : task
+                        ),
+                      ],
                     })
                   }
                   existingData={task}
@@ -233,6 +243,7 @@ export const RoomActionDialog = (props: RoomActionDialogProps) => {
             },
           })
           .then(() => handleClose());
+      else handleClose();
     }
   };
 

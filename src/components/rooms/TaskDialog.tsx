@@ -305,6 +305,7 @@ interface TaskDialogProps {
   room: Room;
   renderButton: (onClick: () => void) => void;
   addTask: (task: TaskPost) => void;
+  editTask: (task: TaskPost) => void;
   // Only present if editing
   existingData?: Task;
 }
@@ -435,7 +436,8 @@ export const TaskDialog = (props: TaskDialogProps) => {
 
   const handleFinish = async () => {
     if (task !== undefined) {
-      props.addTask(task);
+      if (props.existingData === undefined) props.addTask(task);
+      else props.editTask(task);
       handleClose();
     }
   };

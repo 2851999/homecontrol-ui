@@ -1,4 +1,9 @@
 -------------------------------------------------------------
+v0.5.1
+
+- Fixed bug: Editing a room action task would add it again
+
+-------------------------------------------------------------
 v0.5.0
 
 - Added the ability to edit room actions and their tasks
