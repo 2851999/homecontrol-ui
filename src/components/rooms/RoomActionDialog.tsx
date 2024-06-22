@@ -117,11 +117,9 @@ export const RoomActionDialog = (props: RoomActionDialogProps) => {
                   editTask={(newTask: TaskPost) =>
                     setAction({
                       ...action,
-                      tasks: [
-                        ...action.tasks.map((currentTask, currentTaskIndex) =>
-                          currentTaskIndex === taskIndex ? newTask : task
-                        ),
-                      ],
+                      tasks: action.tasks.map((currentTask, currentTaskIndex) =>
+                        currentTaskIndex === taskIndex ? newTask : currentTask
+                      ),
                     })
                   }
                   existingData={task}
