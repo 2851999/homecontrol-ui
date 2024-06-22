@@ -7,7 +7,12 @@ import {
 } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { authenticated_api } from "./auth";
-import { RoomAction, RoomActionPost, TaskType } from "./schemas/actions";
+import {
+  RoomAction,
+  RoomActionPatch,
+  RoomActionPost,
+  TaskType,
+} from "./schemas/actions";
 
 const fetchRoomActions = (roomId?: string): Promise<RoomAction[]> => {
   return authenticated_api
@@ -41,6 +46,31 @@ export const useAddRoomAction = (): UseMutationResult<
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (roomAction: RoomActionPost) => postRoomAction(roomAction),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["RoomActions"] });
+    },
+  });
+};
+
+const patchRoomAction = (
+  action_id: string,
+  action: RoomActionPatch
+): Promise<RoomAction> => {
+  return authenticated_api
+    .patch(`/actions/room/${action_id}`, action)
+    .then((response) => response.data);
+};
+
+export const usePatchRoomAction = (): UseMutationResult<
+  RoomAction,
+  AxiosError,
+  { action_id: string; actionData: RoomActionPatch },
+  any
+> => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { action_id: string; actionData: RoomActionPatch }) =>
+      patchRoomAction(data.action_id, data.actionData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["RoomActions"] });
     },

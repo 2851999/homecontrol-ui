@@ -15,6 +15,7 @@ import { Room } from "../../api/schemas/rooms";
 import { CircularLoadingIndicator } from "../CircularLoadingIndicator";
 import { ICONS } from "./Actions";
 import { RoomActionDialog } from "./RoomActionDialog";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface AdminRoomActionsAccordionProps {
   room: Room;
@@ -64,10 +65,16 @@ export const AdminRoomActionsAccordion = (
               >
                 {ICONS[action.icon]}
                 <Typography sx={{ marginLeft: 0.5 }}>{action.name}</Typography>
-                <IconButton
-                  sx={{ marginLeft: "auto" }}
-                  onClick={() => handleDeleteClicked(action.id)}
-                >
+                <RoomActionDialog
+                  renderButton={(onClick) => (
+                    <IconButton sx={{ marginLeft: "auto" }} onClick={onClick}>
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  room={props.room}
+                  existingData={action}
+                />
+                <IconButton onClick={() => handleDeleteClicked(action.id)}>
                   <DeleteIcon color="error" />
                 </IconButton>
               </Card>

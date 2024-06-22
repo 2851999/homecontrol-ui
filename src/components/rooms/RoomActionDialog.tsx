@@ -21,16 +21,23 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
-import { useAddRoomAction } from "../../api/actions";
-import { RoomActionPost, TaskPost } from "../../api/schemas/actions";
+import { useEffect, useState } from "react";
+import { useAddRoomAction, usePatchRoomAction } from "../../api/actions";
+import {
+  RoomAction,
+  RoomActionPost,
+  TaskPost,
+} from "../../api/schemas/actions";
 import { Room } from "../../api/schemas/rooms";
 import { ICONS } from "./Actions";
 import { TaskDialog } from "./TaskDialog";
+import EditIcon from "@mui/icons-material/Edit";
 
 interface RoomActionDialogProps {
   renderButton: (onClick: () => void) => void;
   room: Room;
+  // Only present if editing
+  existingData?: RoomAction;
 }
 
 const ADD_DIALOGUE_STEPS = ["Name", "Tasks", "Icon"];
@@ -49,8 +56,15 @@ export const RoomActionDialog = (props: RoomActionDialogProps) => {
   // Stepper state
   const [activeStep, setActiveStep] = useState<number>(0);
 
+  // Assign room action when updated (when editing)
+  useEffect(() => {
+    if (open && props.existingData !== undefined)
+      setAction(props.existingData as RoomActionPost);
+  }, [open, props.existingData]);
+
   // Mutations
   const roomActionAddMutation = useAddRoomAction();
+  const roomActionPatchMutation = usePatchRoomAction();
 
   const handleNameChange = (newName: string) => {
     if (nameError !== undefined) setNameError(undefined);
@@ -87,8 +101,22 @@ export const RoomActionDialog = (props: RoomActionDialogProps) => {
                 }}
               >
                 <Typography>{task.task_type}</Typography>
+                <TaskDialog
+                  room={props.room}
+                  renderButton={(onClick) => (
+                    <IconButton sx={{ marginLeft: "auto" }} onClick={onClick}>
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  addTask={(task: TaskPost) =>
+                    setAction({
+                      ...action,
+                      tasks: [...action.tasks, task],
+                    })
+                  }
+                  existingData={task}
+                />
                 <IconButton
-                  sx={{ marginLeft: "auto" }}
                   onClick={() => {
                     setAction({
                       ...action,
@@ -183,14 +211,38 @@ export const RoomActionDialog = (props: RoomActionDialogProps) => {
   };
 
   const handleFinish = () => {
-    roomActionAddMutation.mutateAsync(action).then(() => handleClose());
+    if (props.existingData === undefined)
+      // Adding
+      roomActionAddMutation.mutateAsync(action).then(() => handleClose());
+    //Editing
+    else {
+      const nameUpdated = action.name !== props.existingData.name;
+      const roomIdUpdated = action.room_id !== props.existingData.room_id;
+      const iconUpdated = action.icon !== props.existingData.icon;
+      const tasksUpdated = action.tasks !== props.existingData.tasks;
+
+      if (nameUpdated || roomIdUpdated || iconUpdated || tasksUpdated)
+        roomActionPatchMutation
+          .mutateAsync({
+            action_id: props.existingData.id,
+            actionData: {
+              name: nameUpdated ? action.name : undefined,
+              room_id: roomIdUpdated ? action.room_id : undefined,
+              icon: iconUpdated ? action.icon : undefined,
+              tasks: tasksUpdated ? action.tasks : undefined,
+            },
+          })
+          .then(() => handleClose());
+    }
   };
 
   return (
     <>
       {props.renderButton(() => setOpen(true))}
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>Add Room Action</DialogTitle>
+        <DialogTitle>
+          {props.existingData ? "Edit Room Action" : "Add Room Action"}
+        </DialogTitle>
         <DialogContent>
           <Stepper activeStep={activeStep} sx={{ marginBottom: 4 }}>
             {ADD_DIALOGUE_STEPS.map((label, index) => (

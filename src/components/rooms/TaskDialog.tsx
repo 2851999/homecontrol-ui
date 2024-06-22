@@ -25,6 +25,7 @@ import {
 } from "../../api/broadlink";
 import { useHueRoomState } from "../../api/hue";
 import {
+  Task,
   TaskACStatePost,
   TaskBroadlinkAction,
   TaskHueScene,
@@ -59,6 +60,7 @@ const DEFAULT_AC_PUT: ACDeviceStatePut = {
 };
 
 interface TaskSelectStepACProps {
+  isEdit: boolean;
   room: Room;
   task: TaskACStatePost;
   onTaskUpdated: (newTask: TaskPost) => void;
@@ -81,9 +83,13 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
   // Current device state
   const deviceStateQuery = useACDeviceState(props.task.device_id);
 
-  // After loading the current state of the device use it as the starting point for the state selection
+  // When creating, after loading the current state of the device use it as the starting point for the state selection
   useEffect(() => {
-    if (!deviceStateQuery.isLoading && deviceStateQuery.data !== undefined) {
+    if (
+      !props.isEdit &&
+      !deviceStateQuery.isLoading &&
+      deviceStateQuery.data !== undefined
+    ) {
       props.onTaskUpdated({
         ...props.task,
         state: {
@@ -299,6 +305,8 @@ interface TaskDialogProps {
   room: Room;
   renderButton: (onClick: () => void) => void;
   addTask: (task: TaskPost) => void;
+  // Only present if editing
+  existingData?: Task;
 }
 
 const ADD_DIALOGUE_STEPS = ["Type", "Select"];
@@ -312,6 +320,12 @@ export const TaskDialog = (props: TaskDialogProps) => {
 
   // Add form state
   const [task, setTask] = useState<TaskPost | undefined>(undefined);
+
+  // Assign room when updated (when editing)
+  useEffect(() => {
+    if (open && props.existingData !== undefined)
+      setTask(props.existingData as TaskPost);
+  }, [open, props.existingData]);
 
   const handleTaskTypeChange = (event: SelectChangeEvent<TaskType>) => {
     const newTaskType = event.target.value;
@@ -377,6 +391,7 @@ export const TaskDialog = (props: TaskDialogProps) => {
           case TaskType.AC_STATE:
             return (
               <TaskSelectStepAC
+                isEdit={props.existingData !== undefined}
                 room={props.room}
                 task={task}
                 onTaskUpdated={handleTaskUpdated}

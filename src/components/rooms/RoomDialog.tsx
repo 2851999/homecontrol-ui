@@ -43,9 +43,9 @@ export const RoomDialog = (props: RoomDialogProps) => {
 
   // Assign room when updated (when editing)
   useEffect(() => {
-    if (props.existingData !== undefined)
+    if (open && props.existingData !== undefined)
       setRoom(props.existingData as RoomPost);
-  }, [props.existingData]);
+  }, [open, props.existingData]);
 
   // Mutations
   const roomAddMutation = useAddRoom();
@@ -195,7 +195,9 @@ export const RoomDialog = (props: RoomDialogProps) => {
     <>
       {props.renderButton(() => setOpen(true))}
       <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-        <DialogTitle>Add Room</DialogTitle>
+        <DialogTitle>
+          {props.existingData ? "Edit Room" : "Add Room"}
+        </DialogTitle>
         <DialogContent>
           <Stepper activeStep={activeStep} sx={{ marginBottom: 4 }}>
             {ADD_DIALOGUE_STEPS.map((label, index) => (

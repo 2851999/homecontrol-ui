@@ -48,3 +48,10 @@ export interface RoomActionPost {
   icon: string;
   tasks: TaskPost[];
 }
+
+export interface RoomActionPatch {
+  name?: string;
+  room_id?: string;
+  icon?: string;
+  tasks?: TaskPost[];
+}
