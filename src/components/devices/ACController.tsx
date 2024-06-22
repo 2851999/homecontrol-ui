@@ -96,15 +96,22 @@ export const ACController = (props: ACControllerProps) => {
           max={30}
           step={1}
           {...(props.useInternalState
-            ? { value: props.deviceState.target_temperature }
-            : { defaultValue: props.deviceState.target_temperature })}
+            ? {
+                value: props.deviceState.target_temperature,
+                onChange: (event, value) =>
+                  handleStateChange({
+                    target_temperature: Array.isArray(value) ? value[0] : value,
+                  }),
+              }
+            : {
+                defaultValue: props.deviceState.target_temperature,
+                onChangeCommitted: (event, value) =>
+                  handleStateChange({
+                    target_temperature: Array.isArray(value) ? value[0] : value,
+                  }),
+              })}
           marks
           valueLabelDisplay="auto"
-          onChangeCommitted={(event, value) =>
-            handleStateChange({
-              target_temperature: Array.isArray(value) ? value[0] : value,
-            })
-          }
         />
       </Grid>
       <Grid item>
