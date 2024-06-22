@@ -1,10 +1,11 @@
 -------------------------------------------------------------
-Next version
+v0.5.0
 
 - Added the ability to edit room actions and their tasks
 - Made room actions AC_STATE task dialogue slider
   instantly reflect instead of waiting for movement to stop
 - Fixed edit room dialogue showing 'Add Room'
+- BREAKING CHANGE: Requires homecontrol-api v0.6.0
 
 -------------------------------------------------------------
 v0.4.1
