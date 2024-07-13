@@ -57,6 +57,7 @@ const DEFAULT_AC_PUT: ACDeviceStatePut = {
   turbo_mode: false,
   fahrenheit: false,
   prompt_tone: false,
+  display_on: true,
 };
 
 interface TaskSelectStepACProps {
@@ -95,6 +96,7 @@ const TaskSelectStepAC = (props: TaskSelectStepACProps) => {
         state: {
           ...deviceStateQuery.data,
           prompt_tone: DEFAULT_AC_PUT.prompt_tone,
+          display_on: DEFAULT_AC_PUT.display_on,
         },
       });
     }
