@@ -4,6 +4,8 @@ import AutoModeIcon from "@mui/icons-material/AutoMode";
 import DryIcon from "@mui/icons-material/Dry";
 import ElectricBoltIcon from "@mui/icons-material/ElectricBolt";
 import EnergySavingsLeafIcon from "@mui/icons-material/EnergySavingsLeaf";
+import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
@@ -219,6 +221,24 @@ export const ACController = (props: ACControllerProps) => {
             <ElectricBoltIcon />
           </TooltipToggleButton>
         </ToggleButtonGroup>
+      </Grid>
+      <Grid item>
+        <TooltipToggleButton
+          value="check"
+          TooltipProps={{ title: "Display On" }}
+          selected={props.deviceState.display_on}
+          onChange={(event, value) => {
+            handleStateChange({
+              display_on: !props.deviceState.display_on,
+            });
+          }}
+        >
+          {props.deviceState.display_on ? (
+            <LightbulbIcon />
+          ) : (
+            <LightbulbOutlinedIcon />
+          )}
+        </TooltipToggleButton>
       </Grid>
       <Grid item>
         <Tooltip title={`Power ${props.deviceState.power ? "off" : "on"}`}>

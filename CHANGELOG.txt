@@ -1,4 +1,10 @@
 -------------------------------------------------------------
+Next version
+
+- Added ability to control an AC device's display
+- Upgrade packages
+
+-------------------------------------------------------------
 v0.5.1
 
 - Fixed bug: Editing a room action task would add it again
