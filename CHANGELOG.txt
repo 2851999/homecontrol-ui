@@ -1,4 +1,9 @@
 -------------------------------------------------------------
+Next version
+
+- Fix bug: AC display being off by default when turned on
+
+-------------------------------------------------------------
 v0.6.0
 
 - Added ability to control an AC device's display

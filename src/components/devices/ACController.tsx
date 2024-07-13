@@ -245,7 +245,12 @@ export const ACController = (props: ACControllerProps) => {
           <IconButton
             color={props.deviceState.power ? "success" : "error"}
             onClick={() =>
-              handleStateChange({ power: !props.deviceState.power })
+              handleStateChange({
+                power: !props.deviceState.power,
+                display_on: props.deviceState.power
+                  ? props.deviceState.display_on
+                  : true,
+              })
             }
           >
             <PowerSettingsNewIcon />
