@@ -42,13 +42,13 @@ export interface ACDeviceStateBase {
   eco_mode: boolean;
   turbo_mode: boolean;
   fahrenheit: boolean;
+  display_on: boolean;
 }
 
 export interface ACDeviceState extends ACDeviceStateBase {
   // Read only
   indoor_temperature: number;
   outdoor_temperature: number;
-  display_on: boolean;
 }
 
 export interface ACDeviceStatePut extends ACDeviceStateBase {
