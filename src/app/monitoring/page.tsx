@@ -1,6 +1,6 @@
 "use client";
 
-import { Grid } from "@mui/material";
+import { Grid2 } from "@mui/material";
 import { useRooms } from "../../api/rooms";
 import { ControlType, Room } from "../../api/schemas/rooms";
 import { LoadingPage } from "../../components/LoadingPage";
@@ -39,16 +39,17 @@ function MonitoringPage() {
   return roomsQuery.isLoading || roomsQuery.data === undefined ? (
     <LoadingPage />
   ) : (
-    <Grid container spacing={2} padding={2}>
-      <Grid
-        item
+    <Grid2 container spacing={2} padding={2}>
+      <Grid2
         container
-        xs={12}
+        size={{
+          xs: 12,
+        }}
         direction="row"
         spacing={2}
         justifyContent="center"
       >
-        <Grid item>
+        <Grid2>
           <MobileDateTimePicker
             label="Start Timestamp"
             value={
@@ -59,8 +60,8 @@ function MonitoringPage() {
               actionBar: { actions: ["cancel", "clear", "today", "accept"] },
             }}
           />
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           <MobileDateTimePicker
             label="End Timestamp"
             value={endTimestamp !== undefined ? dayjs(endTimestamp) : undefined}
@@ -69,27 +70,27 @@ function MonitoringPage() {
               actionBar: { actions: ["cancel", "clear", "today", "accept"] },
             }}
           />
-        </Grid>
-      </Grid>
-      <Grid item xs={12} md={6}>
+        </Grid2>
+      </Grid2>
+      <Grid2 size={{ xs: 12, md: 6 }}>
         <RoomTemperatureGraph
           roomName={"outdoor"}
           startTimestamp={startTimestamp}
           endTimestamp={endTimestamp}
         />
-      </Grid>
+      </Grid2>
       {roomsQuery.data
         .filter((room) => hasACController(room))
         .map((room) => (
-          <Grid item key={room.id} xs={12} md={6} xl={3}>
+          <Grid2 key={room.id} size={{ xs: 12, md: 6, xl: 3 }}>
             <RoomTemperatureGraph
               roomName={room.name}
               startTimestamp={startTimestamp}
               endTimestamp={endTimestamp}
             />
-          </Grid>
+          </Grid2>
         ))}
-    </Grid>
+    </Grid2>
   );
 }
 

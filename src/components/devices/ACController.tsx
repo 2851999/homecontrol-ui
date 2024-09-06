@@ -11,7 +11,7 @@ import VolumeOffIcon from "@mui/icons-material/VolumeOff";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import WbSunnyIcon from "@mui/icons-material/WbSunny";
 import {
-  Grid,
+  Grid2,
   IconButton,
   Slider,
   ToggleButton,
@@ -68,8 +68,8 @@ export const ACController = (props: ACControllerProps) => {
   };
 
   return (
-    <Grid container direction="column" alignItems="center" spacing={2}>
-      <Grid item sx={{ display: "inline-flex", alignItems: "center" }}>
+    <Grid2 container direction="column" alignItems="center" spacing={2}>
+      <Grid2 sx={{ display: "inline-flex", alignItems: "center" }}>
         <Typography variant="h6">
           {props.deviceState.target_temperature}&deg;C
         </Typography>
@@ -91,8 +91,8 @@ export const ACController = (props: ACControllerProps) => {
             )}
           </IconButton>
         </AuthenticatedComponent>
-      </Grid>
-      <Grid item width="100%">
+      </Grid2>
+      <Grid2 width="100%">
         <Slider
           min={16}
           max={30}
@@ -115,8 +115,8 @@ export const ACController = (props: ACControllerProps) => {
           marks
           valueLabelDisplay="auto"
         />
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <ToggleButtonGroup
           value={props.deviceState.operational_mode}
           exclusive
@@ -156,8 +156,8 @@ export const ACController = (props: ACControllerProps) => {
             <AirIcon />
           </TooltipToggleButton>
         </ToggleButtonGroup>
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <ToggleButtonGroup
           value={props.deviceState.fan_speed}
           exclusive
@@ -196,8 +196,8 @@ export const ACController = (props: ACControllerProps) => {
             H
           </TooltipToggleButton>
         </ToggleButtonGroup>
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <ToggleButtonGroup
           value={
             props.deviceState.eco_mode
@@ -221,8 +221,8 @@ export const ACController = (props: ACControllerProps) => {
             <ElectricBoltIcon />
           </TooltipToggleButton>
         </ToggleButtonGroup>
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <TooltipToggleButton
           value="check"
           TooltipProps={{ title: "Display On" }}
@@ -239,8 +239,8 @@ export const ACController = (props: ACControllerProps) => {
             <LightbulbOutlinedIcon />
           )}
         </TooltipToggleButton>
-      </Grid>
-      <Grid item>
+      </Grid2>
+      <Grid2>
         <Tooltip title={`Power ${props.deviceState.power ? "off" : "on"}`}>
           <IconButton
             color={props.deviceState.power ? "success" : "error"}
@@ -256,7 +256,7 @@ export const ACController = (props: ACControllerProps) => {
             <PowerSettingsNewIcon />
           </IconButton>
         </Tooltip>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 };

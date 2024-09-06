@@ -1,6 +1,6 @@
 "use client";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { useRooms } from "../api/rooms";
 import { withAuth } from "../components/Authenticated";
 import { LoadingPage } from "../components/LoadingPage";
@@ -14,21 +14,21 @@ function HomePage() {
   return roomsQuery.isLoading || roomsQuery.data === undefined ? (
     <LoadingPage />
   ) : (
-    <Grid container spacing={2} padding={2}>
+    <Grid2 container spacing={2} padding={2}>
       {outdoorTemperatureQuery.data !== undefined &&
         outdoorTemperatureQuery.data.value !== null && (
-          <Grid item xs={12} textAlign="center">
+          <Grid2 size={{ xs: 12 }} textAlign="center">
             <Typography variant="h5">
               Outdoor Temperature: {outdoorTemperatureQuery.data.value}&deg;C
             </Typography>
-          </Grid>
+          </Grid2>
         )}
       {roomsQuery.data.map((room) => (
-        <Grid item key={room.id} xs={12} md={6} xl={3}>
+        <Grid2 key={room.id} size={{ xs: 12, md: 6, xl: 3 }}>
           <RoomCard room={room} />
-        </Grid>
+        </Grid2>
       ))}
-    </Grid>
+    </Grid2>
   );
 }
 

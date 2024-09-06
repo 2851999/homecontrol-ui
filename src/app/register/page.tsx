@@ -6,7 +6,7 @@ import {
   Button,
   FormControl,
   FormHelperText,
-  Grid,
+  Grid2,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -127,28 +127,28 @@ export default function RegisterPage() {
   );
 
   return (
-    <Grid
+    <Grid2
       container
       direction="row"
       justifyContent="center"
       alignItems="center"
       sx={{ minHeight: "100vh" }}
     >
-      <Grid item>
+      <Grid2>
         <Paper sx={{ padding: 4 }}>
-          <Grid container direction="column" alignItems="center" spacing={2}>
-            <Grid item textAlign="center">
+          <Grid2 container direction="column" alignItems="center" spacing={2}>
+            <Grid2 textAlign="center">
               <Typography variant="h3">New Account</Typography>
-            </Grid>
+            </Grid2>
             {errorMessage !== undefined && (
-              <Grid item>
+              <Grid2>
                 <Alert variant="filled" severity="error">
                   {errorMessage}
                 </Alert>
-              </Grid>
+              </Grid2>
             )}
             {createdAccount === "disabled" && (
-              <Grid item>
+              <Grid2>
                 <Alert variant="filled" severity="info">
                   Account created but disabled. Please contact an admin to be
                   approved. Return to{" "}
@@ -157,10 +157,10 @@ export default function RegisterPage() {
                   </Link>
                   .
                 </Alert>
-              </Grid>
+              </Grid2>
             )}
             {createdAccount === "complete" && (
-              <Grid item>
+              <Grid2>
                 <Alert variant="filled" severity="success">
                   Account created. Return to{" "}
                   <Link component={RouterLink} href="/login">
@@ -168,9 +168,9 @@ export default function RegisterPage() {
                   </Link>
                   .
                 </Alert>
-              </Grid>
+              </Grid2>
             )}
-            <Grid item sx={{ width: "100%" }}>
+            <Grid2 sx={{ width: "100%" }}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel htmlFor="username-input">Username</InputLabel>
                 <OutlinedInput
@@ -185,8 +185,8 @@ export default function RegisterPage() {
                   <FormHelperText error>{usernameErrorMessage}</FormHelperText>
                 )}
               </FormControl>
-            </Grid>
-            <Grid item sx={{ width: "100%" }}>
+            </Grid2>
+            <Grid2 sx={{ width: "100%" }}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel htmlFor="password-input">Password</InputLabel>
                 <OutlinedInput
@@ -209,8 +209,8 @@ export default function RegisterPage() {
                   fullWidth
                 ></OutlinedInput>
               </FormControl>
-            </Grid>
-            <Grid item sx={{ width: "100%" }}>
+            </Grid2>
+            <Grid2 sx={{ width: "100%" }}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel htmlFor="repeated-password-input">
                   Repeated password
@@ -246,15 +246,15 @@ export default function RegisterPage() {
                   <FormHelperText error>{passwordErrorMessage}</FormHelperText>
                 )}
               </FormControl>
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Button variant="contained" onClick={handleCreateClicked}>
                 Create Account
               </Button>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Paper>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }

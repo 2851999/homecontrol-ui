@@ -11,7 +11,7 @@ import {
   Divider,
   FormControlLabel,
   FormGroup,
-  Grid,
+  Grid2,
   IconButton,
   LinearProgress,
   Slider,
@@ -223,12 +223,12 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
           </Box>
         )}
         <Divider sx={{ my: 1 }} />
-        <Grid container spacing={1}>
+        <Grid2 container spacing={1}>
           {Object.keys(roomStateQuery.data.scenes).map((sceneId) => {
             const scene = roomStateQuery.data.scenes[sceneId];
 
             return (
-              <Grid item key={sceneId} xs={4}>
+              <Grid2 key={sceneId} size={{ xs: 4 }}>
                 <Card>
                   <CardActionArea
                     onClick={() => handleStateChange({ scene: sceneId })}
@@ -250,10 +250,10 @@ const ControllerAccordionHueRoom = (props: ControllerAccordionHueRoomProps) => {
                     </CardContent>
                   </CardActionArea>
                 </Card>
-              </Grid>
+              </Grid2>
             );
           })}
-        </Grid>
+        </Grid2>
         <Divider sx={{ my: 1 }} />
         <FormGroup>
           {Object.keys(roomStateQuery.data.lights).map((lightId) => {

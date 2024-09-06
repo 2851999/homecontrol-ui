@@ -1,7 +1,7 @@
 "use client";
 
 import AddIcon from "@mui/icons-material/Add";
-import { Fab, Grid } from "@mui/material";
+import { Fab, Grid2 } from "@mui/material";
 import { useRooms } from "../../../api/rooms";
 import { LoadingPage } from "../../../components/LoadingPage";
 import { AdminRoomCard } from "../../../components/rooms/AdminRoomCard";
@@ -14,13 +14,13 @@ export default function RoomsPage() {
     <LoadingPage />
   ) : (
     <>
-      <Grid container spacing={2} padding={1}>
+      <Grid2 container spacing={2} padding={1}>
         {roomsQuery.data.map((room) => (
-          <Grid item key={room.id} xs={12} md={6} xl={3}>
+          <Grid2 key={room.id} size={{ xs: 12, md: 6, xl: 3 }}>
             <AdminRoomCard room={room} />
-          </Grid>
+          </Grid2>
         ))}
-      </Grid>
+      </Grid2>
       <RoomDialog
         renderButton={(onClick) => (
           <Fab
