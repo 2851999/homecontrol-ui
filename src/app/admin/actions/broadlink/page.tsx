@@ -11,7 +11,7 @@ import {
   DialogTitle,
   FormControl,
   FormHelperText,
-  Grid,
+  Grid2,
   InputLabel,
   MenuItem,
   Select,
@@ -48,8 +48,8 @@ function NameStep(props: {
   onChangeName: (name: string) => void;
 }) {
   return (
-    <Grid container direction="column" spacing={2} sx={{ paddingTop: 1 }}>
-      <Grid item>
+    <Grid2 container direction="column" spacing={2} sx={{ paddingTop: 1 }}>
+      <Grid2>
         <TextField
           label="Name"
           value={props.data.name}
@@ -58,8 +58,8 @@ function NameStep(props: {
           helperText={props.formErrors.name}
           fullWidth
         />
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }
 
@@ -127,13 +127,13 @@ function RecordStep(props: {
 
   return (
     <>
-      <Grid container direction="column" spacing={2} alignItems="center">
-        <Grid item>
+      <Grid2 container direction="column" spacing={2} alignItems="center">
+        <Grid2>
           <Typography>
             When ready press the button below to record the action
           </Typography>
-        </Grid>
-        <Grid item>
+        </Grid2>
+        <Grid2>
           {recording ? (
             <CircularLoadingIndicator />
           ) : (
@@ -141,8 +141,8 @@ function RecordStep(props: {
               Record
             </Button>
           )}
-        </Grid>
-      </Grid>
+        </Grid2>
+      </Grid2>
     </>
   );
 }

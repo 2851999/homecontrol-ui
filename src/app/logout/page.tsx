@@ -1,5 +1,5 @@
 "use client";
-import { Avatar, Button, Grid, Paper, Typography } from "@mui/material";
+import { Avatar, Button, Grid2, Paper, Typography } from "@mui/material";
 import { handleLogout, isLoggedIn } from "../../authentication";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
@@ -20,37 +20,37 @@ export default function LogoutPage() {
   };
 
   return (
-    <Grid
+    <Grid2
       container
       direction="row"
       justifyContent="center"
       alignItems="center"
       sx={{ minHeight: "100vh" }}
     >
-      <Grid item>
+      <Grid2>
         <Paper sx={{ padding: 4 }}>
-          <Grid container direction="column" alignItems="center" spacing={2}>
-            <Grid item textAlign="center">
+          <Grid2 container direction="column" alignItems="center" spacing={2}>
+            <Grid2 textAlign="center">
               <Typography variant="h4">Logged in as</Typography>
-            </Grid>
-            <Grid item textAlign="center" marginTop={2}>
+            </Grid2>
+            <Grid2 textAlign="center" marginTop={2}>
               {user?.username !== undefined && (
                 <Avatar sx={{ width: 64, height: 64 }} />
               )}
-            </Grid>
-            <Grid item textAlign="center" marginBottom={2}>
+            </Grid2>
+            <Grid2 textAlign="center" marginBottom={2}>
               <Typography variant="h5" color="secondary">
                 {user?.username}
               </Typography>
-            </Grid>
-            <Grid item>
+            </Grid2>
+            <Grid2>
               <Button variant="contained" onClick={handleLogoutClicked}>
                 Logout
               </Button>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Paper>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   );
 }

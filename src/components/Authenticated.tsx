@@ -1,6 +1,6 @@
 "use client";
 
-import { Grid, Typography } from "@mui/material";
+import { Grid2, Typography } from "@mui/material";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useContext, useEffect } from "react";
 import { UserAccountType } from "../api/schemas/auth";
@@ -44,17 +44,17 @@ export const AuthenticatedPage = (props: AuthenticatedProps) => {
   ) : user !== undefined &&
     props.adminOnly &&
     user.account_type !== UserAccountType.ADMIN ? (
-    <Grid
+    <Grid2
       container
       direction="row"
       justifyContent="center"
       alignItems="center"
       sx={{ minHeight: minHeight }}
     >
-      <Grid item>
+      <Grid2>
         <Typography variant="h1">Admin only</Typography>
-      </Grid>
-    </Grid>
+      </Grid2>
+    </Grid2>
   ) : (
     props.children
   );
