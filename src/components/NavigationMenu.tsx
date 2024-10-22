@@ -128,6 +128,7 @@ const NavigationSection = (props: NavigationSectionProps) => {
             else if (route.routes)
               return (
                 <NavigationSection
+                  key={route.text}
                   text={route.text}
                   routes={route.routes}
                   offset={props.offset + 2}
