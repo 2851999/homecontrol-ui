@@ -369,6 +369,7 @@ export default function HuePage() {
       rows={rows}
       columns={devicesTableColumns}
       slots={{ toolbar: Toolbar as GridSlots["toolbar"] }}
+      // @ts-expect-error
       slotProps={{ toolbar: { currentBridges: bridgesQuery.data } }}
       autoHeight
     />

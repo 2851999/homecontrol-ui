@@ -116,7 +116,7 @@ const ExecuteRoomActionTaskForm = (props: ExecuteRoomActionTaskForm) => {
 };
 
 interface JobDialogProps {
-  renderButton?: (onClick: () => void) => void;
+  renderButton?: (onClick: () => void) => React.ReactNode;
   // Only present if editing
   existingData?: Job;
   // Only present if being controlled externally

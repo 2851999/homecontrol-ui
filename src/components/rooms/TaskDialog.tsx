@@ -305,7 +305,7 @@ const TaskSelectStepHueScene = (props: TaskSelectStepHueSceneProps) => {
 
 interface TaskDialogProps {
   room: Room;
-  renderButton: (onClick: () => void) => void;
+  renderButton: (onClick: () => void) => React.ReactNode;
   addTask: (task: TaskPost) => void;
   // Only present if editing
   editTask?: (task: TaskPost) => void;

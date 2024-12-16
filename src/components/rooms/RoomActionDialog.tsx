@@ -34,7 +34,7 @@ import { TaskDialog } from "./TaskDialog";
 import EditIcon from "@mui/icons-material/Edit";
 
 interface RoomActionDialogProps {
-  renderButton: (onClick: () => void) => void;
+  renderButton: (onClick: () => void) => React.ReactNode;
   room: Room;
   // Only present if editing
   existingData?: RoomAction;

@@ -79,7 +79,7 @@ const ControllerSelectStepAC = (props: ControllerSelectStepACProps) => {
 };
 
 interface ControllerSelectStepBroadlinkActionDialogProps {
-  renderButton: (onClick: () => void) => void;
+  renderButton: (onClick: () => void) => React.ReactNode;
   onAddAction: (actionId: string) => void;
 }
 
@@ -331,7 +331,7 @@ const ControllerSelectStepHueRoom = (
 };
 
 interface ControllerDialogProps {
-  renderButton: (onClick: () => void) => void;
+  renderButton: (onClick: () => void) => React.ReactNode;
   // Only present if adding
   addController?: (controller: RoomController) => void;
   // Only present if editing

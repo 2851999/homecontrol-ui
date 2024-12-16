@@ -23,7 +23,7 @@ import { AdminControllerAccordion } from "./AdminControllerAccordion";
 import { ControllerDialog } from "./ControllerDialog";
 
 interface RoomDialogProps {
-  renderButton: (onClick: () => void) => void;
+  renderButton: (onClick: () => void) => React.ReactNode;
   // Only present if editing
   existingData?: Room;
 }
