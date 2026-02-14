@@ -1,4 +1,4 @@
-import { CircularProgress, Grid2 } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 
 export interface LoadingPageProps {
   height?: string;
@@ -7,23 +7,23 @@ export interface LoadingPageProps {
 /* Displays a progress bar for the whole page  */
 export const LoadingPage = (props: LoadingPageProps) => {
   return (
-    <Grid2
+    <Grid
       container
       alignItems="center"
       justifyContent="center"
       direction="column"
       sx={{ height: props.height ?? "100vh" }}
     >
-      <Grid2
+      <Grid
         container
         alignItems="center"
         justifyContent="center"
         direction="row"
       >
-        <Grid2>
+        <Grid>
           <CircularProgress size={100} />
-        </Grid2>
-      </Grid2>
-    </Grid2>
+        </Grid>
+      </Grid>
+    </Grid>
   );
 };

@@ -11,7 +11,7 @@ import {
   DialogTitle,
   FormControl,
   FormHelperText,
-  Grid2,
+  Grid,
   InputLabel,
   MenuItem,
   Select,
@@ -293,7 +293,7 @@ export const JobDialogue = (props: JobDialogProps) => {
         return null;
       case TaskType.EXECUTE_ROOM_ACTION:
         return (
-          <Grid2>
+          <Grid>
             <ExecuteRoomActionTaskForm
               task={data.task}
               taskError={taskError}
@@ -302,7 +302,7 @@ export const JobDialogue = (props: JobDialogProps) => {
                 setData({ ...data, task: newTask })
               }
             />
-          </Grid2>
+          </Grid>
         );
     }
   };
@@ -311,7 +311,7 @@ export const JobDialogue = (props: JobDialogProps) => {
     switch (data.trigger.trigger_type) {
       case TriggerType.DATETIME:
         return (
-          <Grid2>
+          <Grid>
             <MobileDateTimePicker
               label="Datetime"
               value={dayjs(data.trigger.value)}
@@ -326,14 +326,14 @@ export const JobDialogue = (props: JobDialogProps) => {
               }
               sx={{ width: "100%" }}
             />
-          </Grid2>
+          </Grid>
         );
       case TriggerType.INTERVAL:
         return (
           <>
-            <Grid2>
-              <Grid2 container direction="row" spacing={2}>
-                <Grid2>
+            <Grid>
+              <Grid container direction="row" spacing={2}>
+                <Grid>
                   <TextField
                     label="Weeks"
                     value={data.trigger.value.weeks}
@@ -353,8 +353,8 @@ export const JobDialogue = (props: JobDialogProps) => {
                       })
                     }
                   />
-                </Grid2>
-                <Grid2>
+                </Grid>
+                <Grid>
                   <TextField
                     label="Days"
                     value={data.trigger.value.days}
@@ -374,8 +374,8 @@ export const JobDialogue = (props: JobDialogProps) => {
                       })
                     }
                   />
-                </Grid2>
-                <Grid2>
+                </Grid>
+                <Grid>
                   <TextField
                     label="Hours"
                     value={data.trigger.value.hours}
@@ -395,8 +395,8 @@ export const JobDialogue = (props: JobDialogProps) => {
                       })
                     }
                   />
-                </Grid2>
-                <Grid2>
+                </Grid>
+                <Grid>
                   <TextField
                     label="Minutes"
                     value={data.trigger.value.minutes}
@@ -416,8 +416,8 @@ export const JobDialogue = (props: JobDialogProps) => {
                       })
                     }
                   />
-                </Grid2>
-                <Grid2>
+                </Grid>
+                <Grid>
                   <TextField
                     label="Seconds"
                     value={data.trigger.value.seconds}
@@ -437,14 +437,14 @@ export const JobDialogue = (props: JobDialogProps) => {
                       })
                     }
                   />
-                </Grid2>
-              </Grid2>
-            </Grid2>
+                </Grid>
+              </Grid>
+            </Grid>
           </>
         );
       case TriggerType.CRON:
         return (
-          <Grid2>
+          <Grid>
             <TextField
               label="Crontab"
               value={data.trigger.value}
@@ -463,7 +463,7 @@ export const JobDialogue = (props: JobDialogProps) => {
               helperText={crontabError}
               fullWidth
             />
-          </Grid2>
+          </Grid>
         );
     }
   };
@@ -481,13 +481,13 @@ export const JobDialogue = (props: JobDialogProps) => {
       >
         <DialogTitle>{props.existingData ? "Edit Job" : "Add Job"}</DialogTitle>
         <DialogContent>
-          <Grid2
+          <Grid
             container
             direction="column"
             spacing={2}
             sx={{ paddingTop: 1 }}
           >
-            <Grid2>
+            <Grid>
               <TextField
                 label="Name"
                 value={data.name}
@@ -499,8 +499,8 @@ export const JobDialogue = (props: JobDialogProps) => {
                 helperText={nameError}
                 fullWidth
               />
-            </Grid2>
-            <Grid2>
+            </Grid>
+            <Grid>
               <FormControl required fullWidth>
                 <InputLabel id="task-select-label">Task</InputLabel>
                 <Select
@@ -520,9 +520,9 @@ export const JobDialogue = (props: JobDialogProps) => {
                   ))}
                 </Select>
               </FormControl>
-            </Grid2>
+            </Grid>
             {getTaskInput()}
-            <Grid2>
+            <Grid>
               <FormControl required fullWidth>
                 <InputLabel id="trigger-type-select-label">
                   Trigger Type
@@ -544,9 +544,9 @@ export const JobDialogue = (props: JobDialogProps) => {
                   ))}
                 </Select>
               </FormControl>
-            </Grid2>
+            </Grid>
             {getTriggerInput()}
-          </Grid2>
+          </Grid>
           {otherError && (
             <FormHelperText error>An unexpected error occurred</FormHelperText>
           )}

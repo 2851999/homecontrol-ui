@@ -3,7 +3,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Grid2,
+  Grid,
   LinearProgress,
   List,
   ListItem,
@@ -32,16 +32,16 @@ interface AdminControllerPropertyProps {
 
 const AdminControllerProperty = (props: AdminControllerPropertyProps) => {
   return (
-    <Grid2 container>
-      <Grid2>
+    <Grid container>
+      <Grid>
         <Typography>{props.label}:</Typography>
-      </Grid2>
-      <Grid2>
+      </Grid>
+      <Grid>
         <Typography color="text.secondary" sx={{ pl: 1 }}>
           {props.children}
         </Typography>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 };
 

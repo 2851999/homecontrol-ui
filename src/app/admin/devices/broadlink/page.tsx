@@ -9,7 +9,7 @@ import {
   DialogContent,
   DialogTitle,
   FormHelperText,
-  Grid2,
+  Grid,
   TextField,
 } from "@mui/material";
 import {
@@ -116,13 +116,13 @@ function AddDialogue() {
         ) : (
           <>
             <DialogContent>
-              <Grid2
+              <Grid
                 container
                 direction="column"
                 spacing={2}
                 sx={{ paddingTop: 1 }}
               >
-                <Grid2>
+                <Grid>
                   <TextField
                     label="Name"
                     value={data.name}
@@ -133,8 +133,8 @@ function AddDialogue() {
                     helperText={formErrors.name}
                     fullWidth
                   />
-                </Grid2>
-                <Grid2>
+                </Grid>
+                <Grid>
                   <TextField
                     label="IP Address"
                     value={data.ip_address}
@@ -148,8 +148,8 @@ function AddDialogue() {
                     helperText={formErrors.ip_address}
                     fullWidth
                   />
-                </Grid2>
-              </Grid2>
+                </Grid>
+              </Grid>
               {otherError && (
                 <FormHelperText error>
                   An unexpected error occurred

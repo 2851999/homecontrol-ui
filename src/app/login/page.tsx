@@ -8,7 +8,7 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  Grid2,
+  Grid,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -72,27 +72,27 @@ export default function LoginPage() {
   };
 
   return (
-    <Grid2
+    <Grid
       container
       direction="row"
       justifyContent="center"
       alignItems="center"
       sx={{ minHeight: "100vh" }}
     >
-      <Grid2>
+      <Grid>
         <Paper sx={{ padding: 4 }}>
-          <Grid2 container direction="column" alignItems="center" spacing={2}>
-            <Grid2 textAlign="center">
+          <Grid container direction="column" alignItems="center" spacing={2}>
+            <Grid textAlign="center">
               <Typography variant="h3">Login</Typography>
-            </Grid2>
+            </Grid>
             {errorMessage !== undefined && (
-              <Grid2>
+              <Grid>
                 <Alert variant="filled" severity="error">
                   {errorMessage}
                 </Alert>
-              </Grid2>
+              </Grid>
             )}
-            <Grid2 sx={{ width: "100%" }}>
+            <Grid sx={{ width: "100%" }}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel htmlFor="username-input">Username</InputLabel>
                 <OutlinedInput
@@ -104,8 +104,8 @@ export default function LoginPage() {
                   fullWidth
                 ></OutlinedInput>
               </FormControl>
-            </Grid2>
-            <Grid2 sx={{ width: "100%" }}>
+            </Grid>
+            <Grid sx={{ width: "100%" }}>
               <FormControl variant="outlined" fullWidth>
                 <InputLabel htmlFor="password-input">Password</InputLabel>
                 <OutlinedInput
@@ -128,8 +128,8 @@ export default function LoginPage() {
                   fullWidth
                 ></OutlinedInput>
               </FormControl>
-            </Grid2>
-            <Grid2 alignItems="left" sx={{ width: "100%" }}>
+            </Grid>
+            <Grid alignItems="left" sx={{ width: "100%" }}>
               <FormControlLabel
                 control={
                   <Checkbox
@@ -141,20 +141,20 @@ export default function LoginPage() {
                 }
                 label="Remember me?"
               />
-            </Grid2>
-            <Grid2 textAlign="center" sx={{ width: "100%", mb: 1 }}>
+            </Grid>
+            <Grid textAlign="center" sx={{ width: "100%", mb: 1 }}>
               <Link component={RouterLink} href="/register">
                 Create an account
               </Link>
-            </Grid2>
-            <Grid2>
+            </Grid>
+            <Grid>
               <Button variant="contained" onClick={handleLoginClicked}>
                 Login
               </Button>
-            </Grid2>
-          </Grid2>
+            </Grid>
+          </Grid>
         </Paper>
-      </Grid2>
-    </Grid2>
+      </Grid>
+    </Grid>
   );
 }
