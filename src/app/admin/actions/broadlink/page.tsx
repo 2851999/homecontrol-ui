@@ -361,7 +361,7 @@ export default function BroadlinkActionsPage() {
   return actionsQuery.isLoading || rows === undefined ? (
     <LoadingPage />
   ) : (
-    // eslint-disable-next-line react/jsx-no-undef
+     
     <DataGrid
       rows={rows}
       columns={actionsTableColumns}
